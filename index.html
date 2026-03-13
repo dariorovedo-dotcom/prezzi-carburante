@@ -383,9 +383,16 @@ function updateResults(){
 
   if(!rows.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
 
+const minPrice = rows[0].price.toFixed(3);
   area.innerHTML=`
-    <div class="rtitle">DISTRIBUTORI — ${selCom} (${selProv}) <span>Top ${rows.length}</span></div>
-    <div class="cards">${rows.map((r,i)=>card(r,i)).join("")}</div>`;
+<div class="title">
+DISTRIBUTORI — ${selCom} (${selProv})
+<span>Top ${rows.length}</span>
+<div style="color:#ffb000;margin-top:4px">
+Prezzo minimo: ${minPrice} €/l
+</div>
+</div>
+<div class="cards">${rows.map((r,i)=>card(r,i)).join("")}</div>`;
 }
 
 function card(r,i){
