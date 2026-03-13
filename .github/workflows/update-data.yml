@@ -1,0 +1,27 @@
+name: Aggiorna dati carburante
+
+on:
+  schedule:
+    - cron: '10 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v3
+
+      - name: Scarica dataset MIMIT
+        run: |
+          curl -L -o prezzo_alle_8.csv https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv
+          curl -L -o anagrafica_impianti_attivi.csv https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
+
+      - name: Commit dati aggiornati
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add *.csv
+          git commit -m "Aggiornamento automatico prezzi carburante" || echo "Nessuna modifica"
+          git push
