@@ -430,6 +430,24 @@ function goBack(){
   document.getElementById("btn-go").classList.remove("on");
   document.getElementById("file-input").value="";
 }
+async function provaCaricamentoAutomatico() {
+  try {
+    const imp = await fetch("./anagrafica_impianti_attivi.csv");
+    const prz = await fetch("./prezzo_alle_8.csv");
+
+    if (!imp.ok || !prz.ok) return;
+
+    impText = await imp.text();
+    przText = await prz.text();
+
+    elabora();   // usa la stessa logica del caricamento manuale
+
+  } catch (e) {
+    console.log("Caricamento automatico non disponibile");
+  }
+}
+
+window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
