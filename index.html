@@ -75,25 +75,44 @@ async function caricaDati(){
 
 function parseCSV(text){
 
-  const lines = text.split("\n");
+  let lines = text
+    .replace(/\r\n/g,"\n")
+    .replace(/\r/g,"\n")
+    .trim()
+    .split("\n");
+
+  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")){
+    lines.shift();
+  }
+
+  if(lines.length < 2) return [];
+
   const sep = lines[0].includes("|") ? "|" : ";";
 
-  const headers = lines[0].split(sep);
+  const headers = lines[0]
+    .split(sep)
+    .map(h => h.trim().replace(/"/g,""));
 
   const data = [];
 
   for(let i=1;i<lines.length;i++){
 
-    if(!lines[i]) continue;
+    if(!lines[i].trim()) continue;
 
-    const row = {};
     const cols = lines[i].split(sep);
 
-    headers.forEach((h,j)=>row[h.trim()] = cols[j]);
+    const row = {};
+
+    headers.forEach((h,j)=>{
+      row[h] = (cols[j] || "").trim().replace(/"/g,"");
+    });
 
     data.push(row);
 
   }
+
+  return data;
+}
 
   return data;
 
