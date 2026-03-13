@@ -432,18 +432,29 @@ function goBack(){
 }
 async function provaCaricamentoAutomatico() {
   try {
+
+    console.log("Tentativo caricamento automatico CSV");
+
     const imp = await fetch("./anagrafica_impianti_attivi.csv");
     const prz = await fetch("./prezzo_alle_8.csv");
 
-    if (!imp.ok || !prz.ok) return;
+    console.log("Status impianti:", imp.status);
+    console.log("Status prezzi:", prz.status);
+
+    if (!imp.ok || !prz.ok) {
+      console.log("File non trovati");
+      return;
+    }
 
     impText = await imp.text();
     przText = await prz.text();
 
-    elabora();   // usa la stessa logica del caricamento manuale
+    console.log("CSV caricati, avvio elaborazione");
+
+    elabora();
 
   } catch (e) {
-    console.log("Caricamento automatico non disponibile");
+    console.log("Errore caricamento automatico:", e);
   }
 }
 
