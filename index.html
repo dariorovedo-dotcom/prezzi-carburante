@@ -49,6 +49,8 @@ select{
 
 <script>
 
+<script>
+
 let impianti = {};
 let prezzi = [];
 
@@ -70,68 +72,44 @@ async function caricaDati(){
   parsePrezzi(przText);
 
   buildProvince();
-
 }
 
 function parseCSV(text){
-
-  let lines = text
-    .replace(/\r\n/g,"\n")
-    .replace(/\r/g,"\n")
-    .trim()
-    .split("\n");
-
-  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")){
-    lines.shift();
-  }
-
-  if(lines.length < 2) return [];
-
+  const lines = text.trim().split("\n");
   const sep = lines[0].includes("|") ? "|" : ";";
 
-  const headers = lines[0]
-    .split(sep)
-    .map(h => h.trim().replace(/"/g,""));
+  const headers = lines[0].split(sep);
 
-  const data = [];
+  const data=[];
 
   for(let i=1;i<lines.length;i++){
+    if(!lines[i]) continue;
 
-    if(!lines[i].trim()) continue;
+    const row={};
+    const cols=lines[i].split(sep);
 
-    const cols = lines[i].split(sep);
-
-    const row = {};
-
-    headers.forEach((h,j)=>{
-      row[h] = (cols[j] || "").trim().replace(/"/g,"");
-    });
+    headers.forEach((h,j)=>row[h.trim()]=cols[j]);
 
     data.push(row);
-
   }
 
   return data;
-}
-
-  return data;
-
 }
 
 function parseImpianti(text){
 
-  const rows = parseCSV(text);
+  const rows=parseCSV(text);
 
   rows.forEach(r=>{
 
-    const id = r.idImpianto || r.id_impianto;
+    const id=r.idImpianto || r.id_impianto;
 
     if(!id) return;
 
-    impianti[id] = r;
+    impianti[id]=r;
 
-    const prov = r.Provincia?.toUpperCase();
-    const com = r.Comune?.toUpperCase();
+    const prov=r.Provincia?.toUpperCase();
+    const com=r.Comune?.toUpperCase();
 
     if(!province.includes(prov)) province.push(prov);
 
@@ -140,18 +118,15 @@ function parseImpianti(text){
     if(!comuni[prov].includes(com)) comuni[prov].push(com);
 
   });
-
 }
 
 function parsePrezzi(text){
-
-  prezzi = parseCSV(text);
-
+  prezzi=parseCSV(text);
 }
 
 function buildProvince(){
 
-  const sel = document.getElementById("provincia");
+  const sel=document.getElementById("provincia");
 
   sel.innerHTML="<option>Seleziona provincia</option>";
 
@@ -163,9 +138,7 @@ function buildProvince(){
     o.textContent=p;
 
     sel.appendChild(o);
-
   });
-
 }
 
 document.getElementById("provincia").addEventListener("change",e=>{
@@ -184,9 +157,7 @@ document.getElementById("provincia").addEventListener("change",e=>{
     o.textContent=c;
 
     sel.appendChild(o);
-
   });
-
 });
 
 document.getElementById("comune").addEventListener("change",e=>{
@@ -194,7 +165,6 @@ document.getElementById("comune").addEventListener("change",e=>{
   comuneSel=e.target.value;
 
   mostraRisultati();
-
 });
 
 function mostraRisultati(){
@@ -240,12 +210,12 @@ function mostraRisultati(){
     `;
 
     res.appendChild(div);
-
   });
-
 }
 
 window.onload=caricaDati;
+
+</script>
 
 </script>
 
