@@ -60,10 +60,10 @@ let comuneSel="";
 
 async function caricaDati(){
 
-  const imp = await fetch("anagrafica_impianti_attivi.csv");
+  const imp = await fetch("./anagrafica_impianti_attivi.csv");
   const impText = await imp.text();
 
-  const prz = await fetch("prezzo_alle_8.csv");
+  const prz = await fetch("./prezzo_alle_8.csv");
   const przText = await prz.text();
 
   parseImpianti(impText);
