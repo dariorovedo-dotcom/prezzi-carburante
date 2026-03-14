@@ -384,11 +384,19 @@ function updateResults(){
   if(!rows.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
 
 const minPrice = rows[0].price.toFixed(3);
-  area.innerHTML=`
+
+const lastUpdate = rows
+  .map(r => r["dtComu"])
+  .filter(Boolean)
+  .sort()
+  .reverse()[0] || "";
+
+area.innerHTML=`
 <div class="title">
-DISTRIBUTORI — ${selCom} (${selProv})
+DISTRIBUTORI – ${selCom} (${selProv}) 
+<span style="font-size:14px;color:#aaa;">aggiornato ${lastUpdate}</span>
 <span>Top ${rows.length}</span>
-<div style="color:#ffb000;margin-top:4px">
+<div style="color:#fb0000;margin-top:4px">
 Prezzo minimo: ${minPrice} €/l
 </div>
 </div>
