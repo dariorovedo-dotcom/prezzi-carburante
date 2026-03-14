@@ -103,6 +103,8 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .btn-back:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
 @media(max-width:480px){ .card { grid-template-columns:1fr auto; } .rank { display:none; } }
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -165,6 +167,7 @@ input:disabled { opacity:.35; cursor:not-allowed; }
   </div>
   <div class="divider"></div>
   <div class="results-wrap">
+  <div id="map" style="height:420px;margin-bottom:20px;border-radius:6px;overflow:hidden"></div>
     <div id="results"></div>
     <button class="btn-back" onclick="goBack()">↩ Carica nuovi file</button>
   </div>
@@ -177,6 +180,8 @@ let PREV={}, SNAP_DATE="", HAS_DELTA=false;
 let impText="", przText="";
 let selProv="", selCom="", selComTxt="", selCarb="", selMode="all";
 const SNAP_KEY="carb_snap_v2";
+let map=null;
+let markers=[];
 const LABELS={"Benzina":"⛽ Benzina","Gasolio":"🛢️ Gasolio","GPL":"🔵 GPL","Metano":"💨 Metano","Benzina Super":"⭐ Super","HVO":"🌿 HVO"};
 
 // ── LEGGI FILE ────────────────────────────────────────────────────────────────
@@ -421,6 +426,8 @@ PREZZO MINIMO: ${minPrice} €/L
 <div class="cards">
 ${rows.map((r,i)=>card(r,i)).join("")}
 </div>`;
+
+drawMap(rows);
 }
 
 function card(r,i){
@@ -452,6 +459,49 @@ function card(r,i){
       ${r.prevP!=null?`<div class="pp">prec. ${r.prevP.toFixed(3)}</div>`:""}
     </div>
   </div>`;
+}
+
+function drawMap(rows){
+
+  if(!rows.length) return;
+
+  if(!map){
+    map=L.map("map");
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { attribution:"© OpenStreetMap" }
+    ).addTo(map);
+  }
+
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+
+  const bounds=[];
+
+  rows.forEach(r=>{
+
+    if(!r["Latitudine"]||!r["Longitudine"]) return;
+
+    const lat=parseFloat(r["Latitudine"]);
+    const lon=parseFloat(r["Longitudine"]);
+
+    const marker=L.marker([lat,lon]).addTo(map);
+
+    marker.bindPopup(
+      `<b>${r["Nome Impianto"]||"Distributore"}</b><br>
+      ${r.price.toFixed(3)} €/L`
+    );
+
+    markers.push(marker);
+    bounds.push([lat,lon]);
+
+  });
+
+  if(bounds.length){
+    map.fitBounds(bounds,{padding:[40,40]});
+  }
+
 }
 
 function goBack(){
