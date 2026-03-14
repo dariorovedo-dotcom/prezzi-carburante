@@ -428,6 +428,8 @@ ${rows.map((r,i)=>card(r,i)).join("")}
 </div>`;
 
 drawMap(rows);
+
+document.getElementById("map").scrollIntoView({behavior:"smooth"});
 }
 
 function card(r,i){
@@ -465,8 +467,9 @@ function drawMap(rows){
 
   if(!rows.length) return;
 
+  // crea la mappa solo la prima volta
   if(!map){
-    map=L.map("map");
+    map = L.map("map").setView([46.41,13.02],12);
 
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -474,33 +477,40 @@ function drawMap(rows){
     ).addTo(map);
   }
 
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
+  // rimuove i marker vecchi
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
 
-  const bounds=[];
+  const bounds = [];
 
-  rows.forEach(r=>{
+  rows.forEach(r => {
 
-    if(!r["Latitudine"]||!r["Longitudine"]) return;
+    if(!r["Latitudine"] || !r["Longitudine"]) return;
 
-    const lat=parseFloat(r["Latitudine"]);
-    const lon=parseFloat(r["Longitudine"]);
+    const lat = parseFloat(r["Latitudine"]);
+    const lon = parseFloat(r["Longitudine"]);
 
-    const marker=L.marker([lat,lon]).addTo(map);
+    const marker = L.marker([lat, lon]).addTo(map);
 
     marker.bindPopup(
-      `<b>${r["Nome Impianto"]||"Distributore"}</b><br>
+      `<b>${r["Nome Impianto"] || "Distributore"}</b><br>
       ${r.price.toFixed(3)} €/L`
     );
 
     markers.push(marker);
-    bounds.push([lat,lon]);
+    bounds.push([lat, lon]);
 
   });
 
+  // centra la mappa su tutti i distributori
   if(bounds.length){
     map.fitBounds(bounds,{padding:[40,40]});
   }
+
+  // forza aggiornamento della mappa quando cambiano i risultati
+  setTimeout(()=>{
+    map.invalidateSize();
+  },100);
 
 }
 
