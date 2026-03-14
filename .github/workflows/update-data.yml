@@ -2,11 +2,8 @@ name: Aggiorna dati carburante
 
 on:
   schedule:
-    - cron: '10 8 * * *'
+    - cron: "0 */6 * * *"
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   update:
@@ -16,15 +13,20 @@ jobs:
       - name: Scarica repository
         uses: actions/checkout@v3
 
-      - name: Scarica dataset carburanti
+      - name: Scarica anagrafica impianti
         run: |
-          wget -O prezzo_alle_8.csv https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv || true
-          wget -O anagrafica_impianti_attivi.csv https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv || true
+          curl -L -o anagrafica_impianti_attivi.csv \
+          https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
 
-      - name: Commit aggiornamenti
+      - name: Scarica prezzi aggiornati
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          curl -L -o prezzi.csv \
+          https://www.mimit.gov.it/images/exportCSV/prezzi.csv
+
+      - name: Commit e push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
           git add *.csv
-          git commit -m "Aggiornamento automatico dati carburante" || echo "Nessuna modifica"
+          git commit -m "Aggiorna dati carburante" || echo "Nessuna modifica"
           git push
