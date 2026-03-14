@@ -391,16 +391,23 @@ const lastUpdate = rows
   .sort()
   .reverse()[0] || "";
 
-area.innerHTML=`
+area.innerHTML = `
 <div class="title">
-DISTRIBUTORI – ${selCom} (${selProv}) 
-<span style="font-size:14px;color:#aaa;">aggiornato ${lastUpdate}</span>
-<span>Top ${rows.length}</span>
-<div style="color:#fb0000;margin-top:4px">
-Prezzo minimo: ${minPrice} €/l
+DISTRIBUTORI – ${selCom} (${selProv})
+<span style="font-size:13px;color:#9ca3af;margin-left:14px;">
+AGGIORNATO ${lastUpdate}
+</span>
+<span style="margin-left:20px;">TOP ${rows.length}</span>
+
+<div style="color:#fb0000;margin-top:6px">
+PREZZO MINIMO: ${minPrice} €/L
 </div>
+
 </div>
-<div class="cards">${rows.map((r,i)=>card(r,i)).join("")}</div>`;
+
+<div class="cards">
+${rows.map((r,i)=>card(r,i)).join("")}
+</div>`;
 }
 
 function card(r,i){
