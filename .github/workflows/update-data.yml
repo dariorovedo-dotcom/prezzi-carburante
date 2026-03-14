@@ -1,5 +1,8 @@
 name: Aggiorna dati carburante
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: "0 */6 * * *"
@@ -10,23 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Scarica repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Scarica anagrafica impianti
         run: |
           curl -L -o anagrafica_impianti_attivi.csv \
           https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
 
-      - name: Scarica prezzi aggiornati
+      - name: Scarica prezzi carburanti aggiornati
         run: |
           curl -L -o prezzi.csv \
           https://www.mimit.gov.it/images/exportCSV/prezzi.csv
 
-      - name: Commit e push
+      - name: Commit e push se ci sono modifiche
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add *.csv
-          git commit -m "Aggiorna dati carburante" || echo "Nessuna modifica"
+          git diff --cached --quiet || git commit -m "Aggiorna dati carburante"
           git push
