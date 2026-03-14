@@ -385,19 +385,32 @@ function updateResults(){
 
 const minPrice = rows[0].price.toFixed(3);
 
+// ultima data comunicata dai distributori
 const lastUpdate = rows
-  .map(r => r["dtComu"])
+  .map(r => r["dtComu"]?.slice(0,16))
   .filter(Boolean)
   .sort()
   .reverse()[0] || "";
 
+// conteggio variazioni prezzo
+const up = rows.filter(r => r.delta > 0).length;
+const down = rows.filter(r => r.delta < 0).length;
+
 area.innerHTML = `
 <div class="title">
 DISTRIBUTORI – ${selCom} (${selProv})
+
 <span style="font-size:13px;color:#9ca3af;margin-left:14px;">
 AGGIORNATO ${lastUpdate}
 </span>
-<span style="margin-left:20px;">TOP ${rows.length}</span>
+
+<span style="margin-left:20px;">
+TOP ${rows.length}
+</span>
+
+<span style="margin-left:16px;font-size:12px;color:#9ca3af;">
+${up>0?`▲ ${up}`:""} ${down>0?`▼ ${down}`:""}
+</span>
 
 <div style="color:#fb0000;margin-top:6px">
 PREZZO MINIMO: ${minPrice} €/L
