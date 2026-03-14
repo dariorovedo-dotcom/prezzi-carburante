@@ -391,25 +391,24 @@ function updateResults(){
 const minPrice = rows[0].price.toFixed(3);
 
 // ultima data comunicata dai distributori
-const lastUpdate = rows
-  .map(r => r["dtComu"]?.slice(0,16))
-  .filter(Boolean)
-  .sort()
-  .reverse()[0] || "";
+const lastUpdate = rows.reduce((max,r)=>{
+  const d = r["dtComu"]?.slice(0,16);
+  return d && d>max ? d : max;
+},"");
 
 // conteggio variazioni prezzo
 const up = rows.filter(r => r.delta > 0).length;
 const down = rows.filter(r => r.delta < 0).length;
 
 area.innerHTML = `
-<div class="title">
-DISTRIBUTORI – ${selCom} (${selProv})
+<div class="rtitle">
+DISTRIBUTORI A ${selCom} 
 
 <span style="font-size:13px;color:#9ca3af;margin-left:14px;">
 AGGIORNATO ${lastUpdate}
 </span>
 
-<span style="margin-left:20px;">
+<span style="margin-left:20px;color:#f59e0b;">
 TOP ${rows.length}
 </span>
 
@@ -427,39 +426,71 @@ PREZZO MINIMO: ${minPrice} €/L
 ${rows.map((r,i)=>card(r,i)).join("")}
 </div>`;
 
+const firstLoad = !map;
+
 drawMap(rows);
 
-document.getElementById("map").scrollIntoView({behavior:"smooth"});
+if(firstLoad){
+  document.getElementById("map").scrollIntoView({behavior:"smooth"});
+}
 }
 
+function focusMarker(i){
+
+  if(!markers[i]) return;
+
+  const m = markers[i];
+
+  map.setView(m.getLatLng(), 15, {animate:true});
+
+  m.openPopup();
+
+}
+
+
 function card(r,i){
+
   const brand=r["Bandiera"]||r["gestoreImpianto"]||"";
   const name=r["Nome Impianto"]||r["gestoreImpianto"]||brand||"Distributore";
   const addr=[r["Indirizzo"],r["Comune"]].filter(Boolean).join(", ");
-  const mu=r["Latitudine"]&&r["Longitudine"]?`https://maps.google.com/?q=${r["Latitudine"]},${r["Longitudine"]}`:"";
+
+  const mu=r["Latitudine"]&&r["Longitudine"]
+  ?`https://www.google.com/maps/dir/?api=1&destination=${r["Latitudine"]},${r["Longitudine"]}`
+  :"";
+
   const dc=r.delta==null||Math.abs(r.delta)<0.0005?"":r.delta>0?"dup":"ddn";
-  const db=r.delta==null?"":(Math.abs(r.delta)<0.0005
-    ?`<span class="db ds">= stabile</span>`
-    :r.delta>0?`<span class="db du">▲ +${r.delta.toFixed(3)}</span>`
-              :`<span class="db dd">▼ ${r.delta.toFixed(3)}</span>`);
+
+  const db=r.delta==null?"":(
+    Math.abs(r.delta)<0.0005
+      ?`<span class="db ds">= stabile</span>`
+      :r.delta>0
+        ?`<span class="db du">▲ +${r.delta.toFixed(3)}</span>`
+        :`<span class="db dd">▼ ${r.delta.toFixed(3)}</span>`
+  );
+
   return `<div class="card${i===0?" top":""} ${dc}" style="animation-delay:${i*.06}s">
     <div class="rank">${i+1}</div>
+
     <div class="ci">
       <div class="cn">${name}</div>
       <div class="ca">${addr}</div>
+
       <div class="cm">
         ${brand?`<span class="tag tb">${brand}</span>`:""}
         <span class="tag ${r.self2?"ts":"tv"}">${r.self2?"Self":"Servito"}</span>
         ${r["dtComu"]?`<span class="tag td">${r["dtComu"].slice(0,16)}</span>`:""}
         ${db}
       </div>
-      ${mu?`<a href="${mu}" target="_blank" class="ml">📍 Apri in Maps →</a>`:""}
+
+${mu?`<a href="${mu}" target="_blank" class="ml" onclick="focusMarker(${i});return true;">🧭 Naviga →</a>`:""}
     </div>
+
     <div class="pc">
       <div class="pm">${r.price.toFixed(3)}</div>
       <div class="pu">€/litro</div>
       ${r.prevP!=null?`<div class="pp">prec. ${r.prevP.toFixed(3)}</div>`:""}
     </div>
+
   </div>`;
 }
 
@@ -467,9 +498,8 @@ function drawMap(rows){
 
   if(!rows.length) return;
 
-  // crea la mappa solo la prima volta
   if(!map){
-    map = L.map("map").setView([46.41,13.02],12);
+    map = L.map("map",{zoomControl:true}).setView([43.2,12.6],6);
 
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -477,24 +507,44 @@ function drawMap(rows){
     ).addTo(map);
   }
 
-  // rimuove i marker vecchi
-  markers.forEach(m => map.removeLayer(m));
+  // rimuove marker vecchi
+  markers.forEach(m => m.remove());
   markers = [];
 
   const bounds = [];
 
-  rows.forEach(r => {
+  rows.forEach((r,i) => {
 
     if(!r["Latitudine"] || !r["Longitudine"]) return;
 
     const lat = parseFloat(r["Latitudine"]);
     const lon = parseFloat(r["Longitudine"]);
 
-    const marker = L.marker([lat, lon]).addTo(map);
+    const icon = L.divIcon({
+      className: "marker-num",
+      html: `<div style="
+        background:${i===0 ? '#fbbf24' : '#2563eb'};
+        color:#000;
+        width:28px;
+        height:28px;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:bold;
+        font-size:14px;
+        box-shadow:0 0 6px rgba(0,0,0,0.5);
+      ">${i+1}</div>`,
+      iconSize:[28,28],
+      iconAnchor:[14,14]
+    });
+
+    const marker = L.marker([lat, lon],{icon}).addTo(map);
 
     marker.bindPopup(
       `<b>${r["Nome Impianto"] || "Distributore"}</b><br>
-      ${r.price.toFixed(3)} €/L`
+      ${r["Indirizzo"] || ""}<br>
+      <b>${r.price.toFixed(3)} €/L</b>`
     );
 
     markers.push(marker);
@@ -502,12 +552,14 @@ function drawMap(rows){
 
   });
 
-  // centra la mappa su tutti i distributori
   if(bounds.length){
-    map.fitBounds(bounds,{padding:[40,40]});
+    map.fitBounds(bounds,{
+  padding:[40,40],
+  maxZoom:14
+});
   }
 
-  // forza aggiornamento della mappa quando cambiano i risultati
+  // aggiorna layout mappa
   setTimeout(()=>{
     map.invalidateSize();
   },100);
