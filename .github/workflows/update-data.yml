@@ -11,19 +11,34 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download anagrafica
         run: |
-          curl -L --max-time 120 --retry 3 -o anagrafica_impianti_attivi.csv \
+          curl -L --max-time 120 --retry 3 -o anagrafica_tmp.csv \
           https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
+
+          if grep -q "|" anagrafica_tmp.csv; then
+            mv anagrafica_tmp.csv anagrafica_impianti_attivi.csv
+          else
+            echo "Errore: file anagrafica non valido"
+            exit 1
+          fi
 
       - name: Download prezzi
         run: |
-          curl -L --max-time 120 --retry 3 -o prezzo_alle_8.csv \
+          curl -L --max-time 120 --retry 3 -o prezzi_tmp.csv \
           https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv
+
+          if grep -q "|" prezzi_tmp.csv; then
+            mv prezzi_tmp.csv prezzo_alle_8.csv
+          else
+            echo "Errore: file prezzi non valido"
+            exit 1
+          fi
 
       - name: Commit e push
         run: |
@@ -31,4 +46,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add *.csv
           git diff --cached --quiet || git commit -m "Aggiorna dati carburante"
-          git push origin HEAD
+          git push
