@@ -481,14 +481,29 @@ function updateResults(){
     const minP=geoRows[0].price.toFixed(3);
     const sav=geoRows.length>1?(geoRows[geoRows.length-1].price-geoRows[0].price).toFixed(3):"0.000";
     area.innerHTML=`
-      <div class="rtitle">${selCarb.toUpperCase()} – entro ${geoKm} km
-        <span style="color:#f59e0b">${geoRows.length} distributori</span>
-        <div style="width:100%;color:#fb0000;margin-top:6px;font-size:.95rem">PREZZO MINIMO: ${minP} €/L
-          <span style="color:#22c55e;font-size:12px;margin-left:8px">risparmi ${sav} €/L</span>
-        </div>
-      </div>
-      <div class="cards">${geoRows.map((r,i)=>card(r,i,true)).join("")}</div>`;
-    return;
+
+<div class="rtitle">
+
+  <div class="rline1">
+    ${selCarb.toUpperCase()} – entro ${geoKm} km
+    <span class="rtop">TOP ${geoRows.length}</span>
+  </div>
+
+  <div class="rline2">
+    PREZZO MINIMO: ${minP} €/L
+    <span class="rsave">risparmi ${sav} €/L</span>
+    <span style="color:#6b7280;margin-left:10px;font-size:12px">
+      distributori nel raggio
+    </span>
+  </div>
+
+</div>
+
+<div class="cards">
+${geoRows.map((r,i)=>card(r,i,true)).join("")}
+</div>
+`;
+return;
   }
 
   // MODALITÀ NORMALE
