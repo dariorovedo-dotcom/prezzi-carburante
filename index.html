@@ -307,14 +307,26 @@ function elabora(){
   PROV.forEach(function(p){ COM_MAP[p]=Array.from(COM_MAP[p]).sort(); });
   PRZ=parseCSV(przText);
   if(!PRZ.length){ showErr("Il file prezzi non sembra valido. Riprova."); return; }
-  CARB=Array.from(new Set(PRZ.map(function(r){ return r["descCarburante"]; }).filter(Boolean))).sort();
+  CARB = Array.from(
+  new Set(
+    PRZ.map(function(r){
+      return r["descCarburante"] || r["DescCarburante"];
+    }).filter(Boolean)
+  )
+).sort();
   var today=new Date().toISOString().slice(0,10);
   var todayMap={};
   PRZ.forEach(function(r){
+
   var id = getId(r);
-    var p=parseFloat((r["prezzo"]||"0").replace(",","."));
-    if(id&&r["descCarburante"]&&p>0) todayMap[pk(id,r["descCarburante"],r["isSelf"])]=p;
-  });
+  var carb = r["descCarburante"] || r["DescCarburante"];
+  var p = parseFloat((r["prezzo"] || "0").replace(",", "."));
+
+  if(id && carb && p > 0){
+    todayMap[pk(id, carb, r["isSelf"])] = p;
+  }
+
+});
   var snap=null;
   try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch(ex){}
   if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
@@ -451,7 +463,8 @@ function updateResults(){
   if(geoMode && userLat!==null){
     if(!selCarb){ area.innerHTML='<div class="empty">Seleziona il carburante</div>'; return; }
     var geoRows=PRZ.filter(function(r){
-      if(N(r["descCarburante"])!==N(selCarb)) return false;
+      var carb = r["descCarburante"] || r["DescCarburante"];
+if(N(carb) !== N(selCarb)) return false;
       if(selMode==="self"&&r["isSelf"]!=="1") return false;
       if(selMode==="servito"&&r["isSelf"]!=="0") return false;
       var id = getId(r);
@@ -462,7 +475,8 @@ function updateResults(){
     }).map(function(r){
       var id = getId(r);
       var price=parseFloat((r["prezzo"]||"0").replace(",","."));
-      var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
+var carb = r["descCarburante"] || r["DescCarburante"];
+var prevP = PREV[pk(id, N(carb), r["isSelf"])];
       if(prevP===undefined) prevP=null;
       var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
       var imp=Object.assign({},IMP[id]||{});
@@ -500,8 +514,9 @@ var ids=new Set(Object.entries(IMP).filter(function(e){
   var rows = PRZ.filter(function(r){
 
   var id = getId(r);
+  var carb = r["descCarburante"] || r["DescCarburante"];
 
-  if(!ids.has(id) || N(r["descCarburante"]) !== N(selCarb)) return false;
+  if(!ids.has(id) || N(carb) !== N(selCarb)) return false;
   if(selMode === "self" && r["isSelf"] !== "1") return false;
   if(selMode === "servito" && r["isSelf"] !== "0") return false;
 
@@ -512,7 +527,8 @@ var ids=new Set(Object.entries(IMP).filter(function(e){
   var id = getId(r);
 
   var price = parseFloat((r["prezzo"] || "0").replace(",", "."));
-  var prevP = PREV[pk(id, r["descCarburante"], r["isSelf"])];
+  var carb = r["descCarburante"] || r["DescCarburante"];
+var prevP = PREV[pk(id, carb, r["isSelf"])];
 
   if(prevP === undefined) prevP = null;
 
@@ -645,15 +661,21 @@ async function provaCaricamentoAutomatico(){
     const base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
 
     async function fetchText(url){
-      const r = await fetch(url);
-      const buf = await r.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-      try{
-        return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
-      }catch{
-        return new TextDecoder("windows-1252").decode(bytes);
-      }
-    }
+  const r = await fetch(url);
+
+  if(!r.ok){
+    throw new Error("File non trovato: " + url);
+  }
+
+  const buf = await r.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+
+  try{
+    return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+  }catch{
+    return new TextDecoder("windows-1252").decode(bytes);
+  }
+}
 
     impText = await fetchText(base + "anagrafica_impianti_attivi.csv?v=" + t);
     try{
