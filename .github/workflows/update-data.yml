@@ -1,4 +1,4 @@
-name: Aggiorna dati carburante
+name: Update Data
 
 permissions:
   contents: write
@@ -11,22 +11,21 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Scarica anagrafica impianti
+      - name: Download anagrafica
         run: |
           curl -L -o anagrafica_impianti_attivi.csv \
           https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
 
-      - name: Scarica prezzi carburanti aggiornati
+      - name: Download prezzi
         run: |
-          curl -L -o prezzi.csv \
+          curl -L -o prezzo_alle_8.csv \
           https://www.mimit.gov.it/images/exportCSV/prezzi.csv
 
-      - name: Commit e push se ci sono modifiche
+      - name: Commit e push
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
