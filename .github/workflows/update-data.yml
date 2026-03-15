@@ -31,4 +31,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add *.csv
           git diff --cached --quiet || git commit -m "Aggiorna dati carburante"
-          git push origin principale
+          git push origin HEAD
