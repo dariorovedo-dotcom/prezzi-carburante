@@ -653,48 +653,31 @@ function goBack(){
   document.getElementById("file-input").value="";
 }
 
-async function provaCaricamentoAutomatico(){
+async function provaCaricamentoAutomatico() {
 
-  const t = Date.now();
-  const base = "https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/";
+  try {
 
-  async function fetchText(url){
-    const r = await fetch(url);
-    if(!r.ok) throw new Error("File non trovato: "+url);
+    const imp = await fetch("https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/anagrafica_impianti_attivi.csv");
+    const prz = await fetch("https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/prezzo_alle_8.csv");
 
-    const buf = await r.arrayBuffer();
-    const bytes = new Uint8Array(buf);
-
-    try{
-      return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
-    }catch{
-      return new TextDecoder("windows-1252").decode(bytes);
+    if (!imp.ok || !prz.ok) {
+      console.log("CSV non trovati");
+      return;
     }
+
+    impText = await imp.text();
+    przText = await prz.text();
+
+    elabora();
+
+  } catch(e) {
+    console.log("Errore:", e);
   }
 
-  impText = await fetchText(base+"anagrafica_impianti_attivi.csv?v="+t);
-
-  try{
-    przText = await fetchText(base+"prezzo_alle_8.csv?v="+t);
-  }catch{
-    przText = await fetchText(base+"prezzi_alle_8.csv?v="+t);
-  }
-
-  elabora();
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+window.addEventListener("load", provaCaricamentoAutomatico);
 
-  function startAuto(){
-    provaCaricamentoAutomatico().catch(function(){
-      // se fallisce riprova dopo 2 secondi
-      setTimeout(startAuto,2000);
-    });
-  }
-
-  startAuto();
-
-});
-</script>
+  </script>
 </body>
 </html>
