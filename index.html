@@ -11,20 +11,12 @@ body { background:#0a0c10; color:#e8e0d0; font-family:'DM Sans',sans-serif; min-
 .header { padding:2rem; border-bottom:1px solid rgba(245,158,11,.2); display:flex; align-items:flex-end; gap:1.5rem; flex-wrap:wrap; }
 .title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,6vw,4rem); color:#f59e0b; line-height:.9; text-shadow:0 0 40px rgba(245,158,11,.3); }
 .subtitle { font-size:.75rem; color:#6b7280; text-transform:uppercase; letter-spacing:.1em; line-height:1.8; }
-
-/* ── SCHERMATA INIZIALE ── */
 #screen-load { padding:2.5rem 2rem; max-width:560px; }
 .how { background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.18); border-radius:8px; padding:1.4rem 1.6rem; margin-bottom:1.8rem; font-size:.88rem; line-height:2; color:#d1c9b8; }
 .how a { color:#f59e0b; font-weight:600; }
 .how b { color:#fff; }
 .how .step-num { display:inline-block; background:rgba(245,158,11,.2); color:#f59e0b; font-weight:700; border-radius:50%; width:1.4rem; height:1.4rem; text-align:center; line-height:1.4rem; font-size:.75rem; margin-right:.4rem; }
-
-.drop-big {
-  border:2px dashed rgba(245,158,11,.3); border-radius:10px;
-  padding:2.5rem 1.5rem; text-align:center; cursor:pointer;
-  transition:all .2s; background:rgba(245,158,11,.03);
-  position:relative;
-}
+.drop-big { border:2px dashed rgba(245,158,11,.3); border-radius:10px; padding:2.5rem 1.5rem; text-align:center; cursor:pointer; transition:all .2s; background:rgba(245,158,11,.03); position:relative; }
 .drop-big:hover, .drop-big.over { border-color:rgba(245,158,11,.7); background:rgba(245,158,11,.07); }
 .drop-big.ok { border-color:rgba(74,222,128,.5); border-style:solid; background:rgba(74,222,128,.04); }
 .drop-big input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
@@ -34,13 +26,10 @@ body { background:#0a0c10; color:#e8e0d0; font-family:'DM Sans',sans-serif; min-
 .drop-big.ok .drop-msg { color:#4ade80; }
 .file-tags { display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; margin-top:.8rem; }
 .file-tag { background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.2); color:#4ade80; font-size:.7rem; padding:.2rem .6rem; border-radius:3px; }
-
 .btn-go { margin-top:1.4rem; background:#f59e0b; color:#0a0c10; border:none; padding:.9rem 2.5rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.1em; cursor:pointer; border-radius:4px; transition:all .2s; opacity:.35; pointer-events:none; width:100%; }
 .btn-go.on { opacity:1; pointer-events:all; }
 .btn-go.on:hover { background:#fbbf24; transform:translateY(-1px); }
 .err-msg { margin-top:.8rem; color:#f87171; font-size:.8rem; display:none; }
-
-/* ── SCHERMATA RISULTATI ── */
 #screen-results { display:none; }
 .status-bar { background:rgba(245,158,11,.08); border-bottom:1px solid rgba(245,158,11,.12); padding:.5rem 2rem; font-size:.72rem; color:#92400e; display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
 .dot { width:6px; height:6px; border-radius:50%; background:#f59e0b; box-shadow:0 0 6px rgba(245,158,11,.6); flex-shrink:0; }
@@ -67,33 +56,25 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .modes button.on { background:rgba(245,158,11,.15); color:#f59e0b; }
 .divider { height:1px; background:rgba(255,255,255,.06); margin:0 2rem; }
 .results-wrap { padding:1rem 2rem 3rem; }
-.rtitle { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:.08em; color:#9ca3af; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; }
+.rtitle { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:.08em; color:#9ca3af; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.4rem; }
 .rtitle span { font-family:'DM Sans',sans-serif; font-size:.7rem; color:#4b5563; text-transform:uppercase; letter-spacing:.08em; }
 .cards { display:flex; flex-direction:column; gap:.6rem; }
 .card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:4px; padding:1rem 1.2rem; display:grid; grid-template-columns:1.8rem 1fr auto; gap:.9rem; align-items:center; animation:up .25s ease both; }
 .card:hover { border-color:rgba(245,158,11,.2); }
 .card.top { border-color:rgba(245,158,11,.3); background:rgba(245,158,11,.04); }
-.card.dup  { border-left:3px solid rgba(248,113,113,.5); }
-.card.ddn  { border-left:3px solid rgba(74,222,128,.5); }
+.card.dup { border-left:3px solid rgba(248,113,113,.5); }
+.card.ddn { border-left:3px solid rgba(74,222,128,.5); }
 @keyframes up { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 .rank { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:#2d3748; line-height:1; text-align:center; }
-.card.top .rank { color:rgba(245,158,11,.4); }
-
-.rank.best{
-  color:#22c55e;
-}
-
-.rank.worst{
-  color:#ef4444;
-}
-.card.top .rank { color:rgba(245,158,11,.4); }
+.rank.best { color:#22c55e; }
+.rank.worst { color:#ef4444; }
 .ci { min-width:0; }
 .cn { font-size:.87rem; font-weight:600; color:#e8e0d0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ca { font-size:.74rem; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:.12rem 0 .22rem; }
 .cm { display:flex; gap:.3rem; flex-wrap:wrap; align-items:center; }
 .tag { font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; padding:.1rem .38rem; border-radius:2px; font-weight:600; }
 .tb { background:rgba(100,116,139,.2); color:#94a3b8; border:1px solid rgba(100,116,139,.2); }
-.ts { background:rgba(34,197,94,.1);  color:#4ade80; border:1px solid rgba(34,197,94,.15); }
+.ts { background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.15); }
 .tv { background:rgba(99,102,241,.1); color:#818cf8; border:1px solid rgba(99,102,241,.15); }
 .td { color:#4b5563; font-size:.58rem; }
 .db { font-size:.67rem; font-weight:700; padding:.1rem .38rem; border-radius:3px; display:inline-flex; align-items:center; gap:.1rem; }
@@ -102,6 +83,7 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .ds { color:#6b7280; background:rgba(107,114,128,.1); border:1px solid rgba(107,114,128,.15); }
 .ml { display:block; font-size:.62rem; color:#f59e0b; text-decoration:none; margin-top:.18rem; opacity:.5; transition:opacity .15s; }
 .ml:hover { opacity:1; }
+.dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
 .pc { text-align:right; flex-shrink:0; }
 .pm { font-family:'Bebas Neue',sans-serif; font-size:1.85rem; color:#f59e0b; line-height:1; }
 .card.top .pm { color:#fbbf24; text-shadow:0 0 16px rgba(245,158,11,.4); }
@@ -110,6 +92,13 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .empty { text-align:center; padding:2.5rem; color:#4b5563; font-size:.85rem; line-height:1.8; }
 .btn-back { background:none; border:1px solid rgba(255,255,255,.1); color:#6b7280; padding:.38rem .9rem; font-size:.72rem; border-radius:3px; cursor:pointer; transition:all .2s; }
 .btn-back:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
+.btn-geo { width:100%; background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.25); color:#818cf8; padding:.65rem 1rem; font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:600; border-radius:4px; cursor:pointer; transition:all .2s; margin-bottom:.6rem; }
+.btn-geo:hover { background:rgba(99,102,241,.2); }
+.btn-geo.active { background:rgba(99,102,241,.2); border-color:#818cf8; color:#a5b4fc; }
+.geo-row { display:none; align-items:center; gap:.7rem; font-size:.75rem; color:#6b7280; margin-bottom:.8rem; flex-wrap:wrap; }
+.geo-row.show { display:flex; }
+.geo-row input[type=range] { width:100px; accent-color:#818cf8; }
+.geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 @media(max-width:480px){ .card { grid-template-columns:1fr auto; } .rank { display:none; } }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -122,33 +111,36 @@ input:disabled { opacity:.35; cursor:not-allowed; }
   <div class="subtitle">Dati ufficiali Ministero Imprese e Made in Italy<br>Aggiornati ogni mattina alle 8:00</div>
 </div>
 
-<!-- SCHERMATA CARICAMENTO -->
 <div id="screen-load">
-
   <div class="how">
-    <div><span class="step-num">1</span> Vai su <a href="https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" target="_blank">mimit.gov.it → Open Data → Carburanti ↗</a></div>
+    <div><span class="step-num">1</span> Vai su <a href="https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" target="_blank">mimit.gov.it &rarr; Open Data &rarr; Carburanti &#8599;</a></div>
     <div><span class="step-num">2</span> Scarica <b>anagrafica_impianti_attivi.csv</b> e <b>prezzo_alle_8.csv</b></div>
     <div><span class="step-num">3</span> Seleziona <b>entrambi i file insieme</b> qui sotto</div>
   </div>
-
   <div class="drop-big" id="drop" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
     <input type="file" accept=".csv" multiple id="file-input" onchange="onFiles(this.files)">
-    <div class="drop-icon" id="drop-icon">📂</div>
+    <div class="drop-icon" id="drop-icon">&#128194;</div>
     <div class="drop-msg" id="drop-msg">Clicca qui o trascina i 2 file CSV</div>
     <div class="drop-sub" id="drop-sub">anagrafica_impianti_attivi.csv + prezzo_alle_8.csv</div>
     <div class="file-tags" id="file-tags"></div>
   </div>
-
   <div class="err-msg" id="err-msg"></div>
-  <button class="btn-go" id="btn-go" onclick="elabora()">AVVIA →</button>
-
+  <button class="btn-go" id="btn-go" onclick="elabora()">AVVIA &rarr;</button>
 </div>
 
-<!-- SCHERMATA RISULTATI -->
 <div id="screen-results">
   <div class="status-bar"><div class="dot"></div><span id="status-txt"></span></div>
   <div id="delta-box"></div>
   <div class="search">
+    <div>
+      <button class="btn-geo" id="btn-geo" onclick="toggleGeo()">&#128205; Trovami i distributori più vicini</button>
+      <div class="geo-row" id="geo-row">
+        <span>Raggio:</span>
+        <input type="range" id="geo-km" min="1" max="30" value="5" oninput="onGeoKm(this.value)">
+        <span id="geo-km-lbl">5 km</span>
+        <button class="geo-clear" onclick="clearGeo()">&#10005; Disattiva</button>
+      </div>
+    </div>
     <div class="row2">
       <div class="fg">
         <label class="fl">Provincia</label>
@@ -156,8 +148,7 @@ input:disabled { opacity:.35; cursor:not-allowed; }
       </div>
       <div class="fg">
         <label class="fl">Comune</label>
-        <input type="text" id="inp-com" disabled placeholder="Prima seleziona provincia"
-          oninput="onCom()" onfocus="showSugg()" onblur="hideSugg()">
+        <input type="text" id="inp-com" disabled placeholder="Prima seleziona provincia" oninput="onCom()" onfocus="showSugg()" onblur="hideSugg()">
         <div class="sugg" id="sugg" style="display:none"></div>
       </div>
     </div>
@@ -166,7 +157,7 @@ input:disabled { opacity:.35; cursor:not-allowed; }
       <div class="chips" id="chips"></div>
     </div>
     <div class="fg">
-      <label class="fl">Modalità</label>
+      <label class="fl">Modalit&agrave;</label>
       <div class="modes">
         <button class="on" onclick="setMode('all',this)">Tutti</button>
         <button onclick="setMode('self',this)">Self Service</button>
@@ -176,32 +167,30 @@ input:disabled { opacity:.35; cursor:not-allowed; }
   </div>
   <div class="divider"></div>
   <div class="results-wrap">
-  <div id="map" style="height:420px;margin-bottom:20px;border-radius:6px;overflow:hidden"></div>
+    <div id="map" style="height:420px;margin-bottom:20px;border-radius:6px;overflow:hidden"></div>
     <div id="results"></div>
-    <button class="btn-back" onclick="goBack()">↩ Carica nuovi file</button>
+    <button class="btn-back" onclick="goBack()">&#8617; Carica nuovi file</button>
   </div>
 </div>
 
 <script>
-// ── STATO ─────────────────────────────────────────────────────────────────────
-let IMP={}, PRZ=[], PROV=[], COM_MAP={}, CARB=[];
-let PREV={}, SNAP_DATE="", HAS_DELTA=false;
-let impText="", przText="";
-let selProv="", selCom="", selComTxt="", selCarb="", selMode="all";
-const SNAP_KEY="carb_snap_v2";
-let map=null;
-let markers=[];
-const LABELS={"Benzina":"⛽ Benzina","Gasolio":"🛢️ Gasolio","GPL":"🔵 GPL","Metano":"💨 Metano","Benzina Super":"⭐ Super","HVO":"🌿 HVO"};
+var IMP={}, PRZ=[], PROV=[], COM_MAP={}, CARB=[];
+var PREV={}, SNAP_DATE="", HAS_DELTA=false;
+var impText="", przText="";
+var selProv="", selCom="", selComTxt="", selCarb="", selMode="all";
+var SNAP_KEY="carb_snap_v2";
+var mapObj=null, markers=[];
+var geoMode=false, userLat=null, userLon=null, geoKm=5;
+var LABELS={"Benzina":"Benzina","Gasolio":"Gasolio","GPL":"GPL","Metano":"Metano","Benzina Super":"Super","HVO":"HVO"};
 
-// ── LEGGI FILE ────────────────────────────────────────────────────────────────
 function readAsText(file){
-  return new Promise(res=>{
-    const r=new FileReader();
-    r.onload=e=>{
-      const bytes=new Uint8Array(e.target.result);
-      let text;
+  return new Promise(function(res){
+    var r=new FileReader();
+    r.onload=function(e){
+      var bytes=new Uint8Array(e.target.result);
+      var text;
       try { text=new TextDecoder("utf-8",{fatal:true}).decode(bytes); }
-      catch { text=new TextDecoder("windows-1252").decode(bytes); }
+      catch(ex) { text=new TextDecoder("windows-1252").decode(bytes); }
       res(text);
     };
     r.readAsArrayBuffer(file);
@@ -213,41 +202,37 @@ function onDragLeave(){ document.getElementById("drop").classList.remove("over")
 function onDrop(e){ e.preventDefault(); document.getElementById("drop").classList.remove("over"); onFiles(e.dataTransfer.files); }
 
 async function onFiles(files){
-  const list=[...files].filter(f=>f.name.endsWith(".csv"));
+  var list=Array.from(files).filter(function(f){ return f.name.endsWith(".csv"); });
   if(!list.length) return;
-  for(const f of list){
-    const text=await readAsText(f);
-    if(f.name.toLowerCase().includes("impianti") || f.name.toLowerCase().includes("anagrafica")) impText=text;
-    else if(f.name.toLowerCase().includes("prezzo") || f.name.toLowerCase().includes("alle_8")) przText=text;
-    else {
-      // fallback: assegna in ordine
-      if(!impText) impText=text; else przText=text;
-    }
+  for(var i=0;i<list.length;i++){
+    var text=await readAsText(list[i]);
+    var fn=list[i].name.toLowerCase();
+    if(fn.includes("impianti")||fn.includes("anagrafica")) impText=text;
+    else if(fn.includes("prezzo")||fn.includes("alle_8")) przText=text;
+    else { if(!impText) impText=text; else przText=text; }
   }
-  // Aggiorna UI
-  const tags=document.getElementById("file-tags");
-  tags.innerHTML=[...list].map(f=>`<span class="file-tag">✓ ${f.name}</span>`).join("");
-  const ready=impText&&przText;
+  var tags=document.getElementById("file-tags");
+  tags.innerHTML=list.map(function(f){ return '<span class="file-tag">&#10003; '+f.name+'</span>'; }).join("");
+  var ready=impText&&przText;
   document.getElementById("drop").classList.toggle("ok",!!ready);
-  document.getElementById("drop-icon").textContent=ready?"✅":"📂";
-  document.getElementById("drop-msg").textContent=ready?"2 file caricati — clicca AVVIA":"1 file caricato — aggiungi l'altro";
+  document.getElementById("drop-icon").textContent=ready?"OK":"";
+  document.getElementById("drop-icon").innerHTML=ready?"&#9989;":"&#128194;";
+  document.getElementById("drop-msg").textContent=ready?"2 file caricati - clicca AVVIA":"1 file caricato - aggiungi l'altro";
   document.getElementById("btn-go").classList.toggle("on",!!ready);
   document.getElementById("err-msg").style.display="none";
 }
 
-// ── CSV PARSER ────────────────────────────────────────────────────────────────
 function parseCSV(text){
-  let lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
-  // Salta righe prima dell'header reale (es. "Estrazione del...")
-  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")) lines.shift();
+  var lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
+  while(lines.length&&!lines[0].includes("|")&&!lines[0].includes(";")) lines.shift();
   if(lines.length<2) return [];
-  const sep=lines[0].includes("|")?"|":";";
-  const hdr=lines[0].split(sep).map(h=>h.trim().replace(/"/g,""));
-  const rows=[];
-  for(let i=1;i<lines.length;i++){
+  var sep=lines[0].includes("|")?"|":";";
+  var hdr=lines[0].split(sep).map(function(h){ return h.trim().replace(/"/g,""); });
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
     if(!lines[i].trim()) continue;
-    const v=lines[i].split(sep).map(s=>s.trim().replace(/"/g,""));
-    const r={}; hdr.forEach((h,j)=>r[h]=v[j]??""); rows.push(r);
+    var v=lines[i].split(sep).map(function(s){ return s.trim().replace(/"/g,""); });
+    var r={}; hdr.forEach(function(h,j){ r[h]=v[j]!==undefined?v[j]:""; }); rows.push(r);
   }
   return rows;
 }
@@ -255,349 +240,318 @@ function parseCSV(text){
 function N(s){ return (s||"").toUpperCase().trim(); }
 function pk(id,c,s){ return id+"|"+N(c)+"|"+s; }
 
-// ── ELABORA ───────────────────────────────────────────────────────────────────
 function elabora(){
   if(!impText||!przText){
-    const e=document.getElementById("err-msg");
+    var e=document.getElementById("err-msg");
     e.textContent="Carica entrambi i file CSV prima di continuare.";
     e.style.display="block"; return;
   }
-
-  // Impianti
-  const impRows=parseCSV(impText);
+  var impRows=parseCSV(impText);
   if(!impRows.length){ showErr("Il file impianti non sembra valido. Riprova."); return; }
-  IMP={}; const provSet=new Set(); COM_MAP={};
-  for(const r of impRows){
-    const id=r["idImpianto"]||r["id_impianto"]||"";
+  IMP={}; var provSet=new Set(); COM_MAP={};
+  impRows.forEach(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
     if(id) IMP[id]=r;
-    const p=N(r["Provincia"]),c=N(r["Comune"]);
+    var p=N(r["Provincia"]),c=N(r["Comune"]);
     if(p){ provSet.add(p); if(!COM_MAP[p])COM_MAP[p]=new Set(); if(c)COM_MAP[p].add(c); }
-  }
-  PROV=[...provSet].sort();
-  for(const p of PROV) COM_MAP[p]=[...COM_MAP[p]].sort();
-
-  // Prezzi
+  });
+  PROV=Array.from(provSet).sort();
+  PROV.forEach(function(p){ COM_MAP[p]=Array.from(COM_MAP[p]).sort(); });
   PRZ=parseCSV(przText);
   if(!PRZ.length){ showErr("Il file prezzi non sembra valido. Riprova."); return; }
-  CARB=[...new Set(PRZ.map(r=>r["descCarburante"]).filter(Boolean))].sort();
-
-  // Snapshot delta
-  const today=new Date().toISOString().slice(0,10);
-  const todayMap={};
-  for(const r of PRZ){
-    const id=r["idImpianto"]||r["id_impianto"]||"";
-    const p=parseFloat((r["prezzo"]||"0").replace(",","."));
+  CARB=Array.from(new Set(PRZ.map(function(r){ return r["descCarburante"]; }).filter(Boolean))).sort();
+  var today=new Date().toISOString().slice(0,10);
+  var todayMap={};
+  PRZ.forEach(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    var p=parseFloat((r["prezzo"]||"0").replace(",","."));
     if(id&&r["descCarburante"]&&p>0) todayMap[pk(id,r["descCarburante"],r["isSelf"])]=p;
-  }
-  let snap=null;
-  try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch{}
+  });
+  var snap=null;
+  try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch(ex){}
   if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
   else { PREV={}; HAS_DELTA=false; }
   if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap}));
-
   buildResults();
 }
 
 function showErr(msg){
-  const e=document.getElementById("err-msg");
+  var e=document.getElementById("err-msg");
   e.textContent=msg; e.style.display="block";
 }
 
-// ── RISULTATI UI ──────────────────────────────────────────────────────────────
 function buildResults(){
   document.getElementById("screen-load").style.display="none";
   document.getElementById("screen-results").style.display="block";
-
   document.getElementById("status-txt").textContent=
-    Object.keys(IMP).length.toLocaleString("it-IT")+" impianti • "+
+    Object.keys(IMP).length.toLocaleString("it-IT")+" impianti - "+
     PRZ.length.toLocaleString("it-IT")+" prezzi"+
-    (HAS_DELTA?" • Confronto con "+SNAP_DATE:"");
-
-  const db=document.getElementById("delta-box");
-  db.innerHTML=HAS_DELTA
-    ?`<div class="delta-bar">
-        <b style="color:#4b5563;font-size:.63rem;text-transform:uppercase;letter-spacing:.08em">vs ${SNAP_DATE}:</b>
-        <span style="display:flex;align-items:center;gap:.3rem"><span style="color:#4ade80">▼</span>sceso</span>
-        <span style="display:flex;align-items:center;gap:.3rem"><span style="color:#f87171">▲</span>salito</span>
-        <span style="color:#6b7280">= stabile</span>
-      </div>`
-    :`<div class="no-delta">ℹ️ Prima esecuzione: le variazioni ▲▼ saranno visibili dal prossimo utilizzo.</div>`;
-
-  // Province
-  const sp=document.getElementById("sel-prov");
-  sp.innerHTML='<option value="">Seleziona...</option>'+PROV.map(p=>`<option value="${p}">${p}</option>`).join("");
-
-  // Carburanti chips
-  selCarb=CARB.includes("Benzina")?"Benzina":CARB[0]||"";
-  document.getElementById("chips").innerHTML=CARB.map(c=>
-    `<button class="chip${selCarb===c?" on":""}" onclick="setCarb('${c.replace(/'/g,"\\'")}',this)">${LABELS[c]||c}</button>`
-  ).join("");
-
+    (HAS_DELTA?" - Confronto con "+SNAP_DATE:"");
+  var db=document.getElementById("delta-box");
+  if(HAS_DELTA){
+    db.innerHTML='<div class="delta-bar"><b style="color:#4b5563;font-size:.63rem;text-transform:uppercase">vs '+SNAP_DATE+':</b><span style="color:#4ade80">&#9660; sceso</span><span style="color:#f87171">&#9650; salito</span><span style="color:#6b7280">= stabile</span></div>';
+  } else {
+    db.innerHTML='<div class="no-delta">Prima esecuzione: le variazioni saranno visibili dal prossimo utilizzo.</div>';
+  }
+  var sp=document.getElementById("sel-prov");
+  sp.innerHTML='<option value="">Seleziona...</option>'+PROV.map(function(p){ return '<option value="'+p+'">'+p+'</option>'; }).join("");
+  selCarb=CARB.includes("Benzina")?"Benzina":(CARB[0]||"");
+  document.getElementById("chips").innerHTML=CARB.map(function(c){
+    return '<button class="chip'+(selCarb===c?" on":"")+'" onclick="setCarb(\''+c.replace(/'/g,"\\'")+"',this)\">"+(LABELS[c]||c)+'</button>';
+  }).join("");
   updateResults();
 }
 
-// ── FILTRI ────────────────────────────────────────────────────────────────────
 function onProv(){
   selProv=document.getElementById("sel-prov").value;
   selCom=""; selComTxt="";
-  const inp=document.getElementById("inp-com");
+  var inp=document.getElementById("inp-com");
   inp.value=""; inp.disabled=!selProv;
   inp.placeholder=selProv?"Scrivi comune...":"Prima seleziona provincia";
   document.getElementById("sugg").style.display="none";
   updateResults();
 }
+
 function onCom(){
-
-  selComTxt = document.getElementById("inp-com").value;
-
-  const up = N(selComTxt);
-  const comuni = COM_MAP[selProv] || [];
-
-  if(!up){
-    selCom="";
-  }else{
-
-    const match =
-      comuni.find(c => N(c) === up) ||
-      comuni.find(c => N(c).startsWith(up)) ||
-      comuni.find(c => N(c).includes(up));
-
-    selCom = match || "";
+  selComTxt=document.getElementById("inp-com").value;
+  var up=N(selComTxt);
+  var comuni=COM_MAP[selProv]||[];
+  if(!up){ selCom=""; }
+  else {
+    var match=comuni.find(function(c){ return N(c)===up; })||
+              comuni.find(function(c){ return N(c).startsWith(up); })||
+              comuni.find(function(c){ return N(c).includes(up); });
+    selCom=match||"";
   }
-
-  renderSugg();
-  updateResults();
+  renderSugg(); updateResults();
 }
+
 function showSugg(){ renderSugg(); }
-function hideSugg(){ setTimeout(()=>document.getElementById("sugg").style.display="none",200); }
+function hideSugg(){ setTimeout(function(){ document.getElementById("sugg").style.display="none"; },200); }
+
 function renderSugg(){
-  const box=document.getElementById("sugg");
-  const list=selComTxt&&!selCom?(COM_MAP[selProv]||[]).filter(c=>c.startsWith(N(selComTxt))).slice(0,8):[];
-  if(!list.length){box.style.display="none";return;}
-  box.innerHTML=list.map(c=>`<div onmousedown="pickCom('${c.replace(/'/g,"\\'")}')"> ${c}</div>`).join("");
+  var box=document.getElementById("sugg");
+  var list=selComTxt&&!selCom?(COM_MAP[selProv]||[]).filter(function(c){ return c.startsWith(N(selComTxt)); }).slice(0,8):[];
+  if(!list.length){ box.style.display="none"; return; }
+  box.innerHTML=list.map(function(c){ return '<div onmousedown="pickCom(\''+c.replace(/'/g,"\\'")+'\')"> '+c+'</div>'; }).join("");
   box.style.display="block";
 }
+
 function pickCom(c){
   selCom=c; selComTxt=c;
   document.getElementById("inp-com").value=c;
   document.getElementById("sugg").style.display="none";
   updateResults();
 }
-function setCarb(c,el){ selCarb=c; document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on")); el.classList.add("on"); updateResults(); }
-function setMode(m,el){ selMode=m; document.querySelectorAll(".modes button").forEach(e=>e.classList.remove("on")); el.classList.add("on"); updateResults(); }
 
-// ── CALCOLA RISULTATI ─────────────────────────────────────────────────────────
+function setCarb(c,el){
+  selCarb=c;
+  document.querySelectorAll("#chips .chip").forEach(function(e){ e.classList.remove("on"); });
+  el.classList.add("on"); updateResults();
+}
+
+function setMode(m,el){
+  selMode=m;
+  document.querySelectorAll(".modes button").forEach(function(e){ e.classList.remove("on"); });
+  el.classList.add("on"); updateResults();
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  var R=6371, toR=Math.PI/180;
+  var dLat=(lat2-lat1)*toR, dLon=(lon2-lon1)*toR;
+  var a=Math.pow(Math.sin(dLat/2),2)+Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.pow(Math.sin(dLon/2),2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function toggleGeo(){
+  if(geoMode){ clearGeo(); return; }
+  if(!navigator.geolocation){ alert("Il tuo browser non supporta la geolocalizzazione."); return; }
+  var btn=document.getElementById("btn-geo");
+  btn.textContent="Ricerca posizione..."; btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      userLat=pos.coords.latitude; userLon=pos.coords.longitude;
+      geoMode=true;
+      btn.innerHTML="&#128205; Vicino a te - attivo"; btn.classList.add("active"); btn.disabled=false;
+      document.getElementById("geo-row").classList.add("show");
+      updateResults();
+    },
+    function(){
+      btn.innerHTML="&#128205; Trovami i distributori più vicini"; btn.disabled=false;
+      alert("Impossibile ottenere la posizione. Controlla i permessi del browser.");
+    }
+  );
+}
+
+function clearGeo(){
+  geoMode=false; userLat=null; userLon=null;
+  var btn=document.getElementById("btn-geo");
+  btn.innerHTML="&#128205; Trovami i distributori più vicini"; btn.classList.remove("active");
+  document.getElementById("geo-row").classList.remove("show");
+  updateResults();
+}
+
+function onGeoKm(v){
+  geoKm=+v;
+  document.getElementById("geo-km-lbl").textContent=v+" km";
+  updateResults();
+}
+
 function updateResults(){
-  const area=document.getElementById("results");
-  if(!selProv || !selCom || !selCarb){
-    area.innerHTML=`<div class="empty">${!selProv?"⬆ Seleziona una provincia":!selCom?"Scrivi il nome del comune":"Seleziona il carburante"}</div>`;
-    return;
-  }
-  const ids=new Set(Object.entries(IMP).filter(([,s])=>N(s["Provincia"])===selProv&&N(s["Comune"])===selCom).map(([id])=>id));
-  const rows=PRZ
-    .filter(r=>{
-      const id=r["idImpianto"]||r["id_impianto"]||"";
-      if(!ids.has(id)||N(r["descCarburante"])!==N(selCarb)) return false;
+  var area=document.getElementById("results");
+
+  if(geoMode && userLat!==null){
+    if(!selCarb){ area.innerHTML='<div class="empty">Seleziona il carburante</div>'; return; }
+    var geoRows=PRZ.filter(function(r){
+      if(N(r["descCarburante"])!==N(selCarb)) return false;
       if(selMode==="self"&&r["isSelf"]!=="1") return false;
       if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-      return true;
-    })
-    .map(r=>{
-      const id=r["idImpianto"]||r["id_impianto"]||"";
-      const price=parseFloat((r["prezzo"]||"0").replace(",","."));
-      const prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])]??null;
-      const delta=(prevP!=null&&price>0)?+(price-prevP).toFixed(4):null;
-      return{...r,...(IMP[id]||{}),price,self2:r["isSelf"]==="1",prevP,delta};
-    })
-    .filter(r=>r.price>0).sort((a,b)=>a.price-b.price).slice(0,5);
+      var id=r["idImpianto"]||r["id_impianto"]||"";
+      var imp=IMP[id]; if(!imp) return false;
+      var la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
+      if(!la||!lo) return false;
+      return haversine(userLat,userLon,la,lo)<=geoKm;
+    }).map(function(r){
+      var id=r["idImpianto"]||r["id_impianto"]||"";
+      var price=parseFloat((r["prezzo"]||"0").replace(",","."));
+      var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
+      if(prevP===undefined) prevP=null;
+      var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
+      var imp=Object.assign({},IMP[id]||{});
+      var la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
+      var dist=haversine(userLat,userLon,la,lo);
+      return Object.assign({},r,imp,{price:price,self2:r["isSelf"]==="1",prevP:prevP,delta:delta,dist:dist});
+    }).filter(function(r){ return r.price>0; }).sort(function(a,b){ return a.price-b.price; }).slice(0,10);
 
-  if(!rows.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
+    if(!geoRows.length){
+      area.innerHTML='<div class="empty">Nessun distributore nel raggio di '+geoKm+' km.<br>Prova ad aumentare il raggio.</div>';
+      return;
+    }
+    var minP=geoRows[0].price.toFixed(3);
+    var sav=geoRows.length>1?(geoRows[geoRows.length-1].price-geoRows[0].price).toFixed(3):"0.000";
+    area.innerHTML='<div class="rtitle">'+
+      '<span style="color:#e8e0d0">'+selCarb.toUpperCase()+' - entro '+geoKm+' km</span>'+
+      '<span style="color:#f59e0b">TOP '+geoRows.length+'</span>'+
+      '<div style="width:100%;color:#ef4444;font-size:1rem;margin-top:4px">PREZZO MINIMO: '+minP+' &euro;/L'+
+      '<span style="color:#22c55e;font-size:.75rem;margin-left:8px">risparmi '+sav+' &euro;/L</span></div></div>'+
+      '<div class="cards">'+geoRows.map(function(r,i){ return card(r,i,true); }).join("")+'</div>';
+    drawMap(geoRows);
+    return;
+  }
 
-const minPrice = rows[0].price.toFixed(3);
+  if(!selProv||!selCom||!selCarb){
+    area.innerHTML='<div class="empty">'+(!selProv?"&#11014; Seleziona una provincia":!selCom?"Scrivi il nome del comune":"Seleziona il carburante")+'</div>';
+    return;
+  }
 
-const maxPrice = rows[rows.length-1].price;
-const saving = rows.length > 1 ? (maxPrice - rows[0].price).toFixed(3) : "0.000";
-const totalStations = ids.size;
+  var ids=new Set(Object.entries(IMP).filter(function(e){ var s=e[1]; return N(s["Provincia"])===selProv&&N(s["Comune"])===selCom; }).map(function(e){ return e[0]; }));
+  var rows=PRZ.filter(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    if(!ids.has(id)||N(r["descCarburante"])!==N(selCarb)) return false;
+    if(selMode==="self"&&r["isSelf"]!=="1") return false;
+    if(selMode==="servito"&&r["isSelf"]!=="0") return false;
+    return true;
+  }).map(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    var price=parseFloat((r["prezzo"]||"0").replace(",","."));
+    var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
+    if(prevP===undefined) prevP=null;
+    var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
+    return Object.assign({},r,IMP[id]||{},{price:price,self2:r["isSelf"]==="1",prevP:prevP,delta:delta});
+  }).filter(function(r){ return r.price>0; }).sort(function(a,b){ return a.price-b.price; }).slice(0,5);
 
-// ultima data comunicata dai distributori
-const lastUpdate = rows.reduce((max,r)=>{
-  const d = r["dtComu"]
-  ? new Date(r["dtComu"]).toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"})
-  : "";
-  return d && d>max ? d : max;
-},"");
+  if(!rows.length){ area.innerHTML='<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalit&agrave; o carburante.</div>'; return; }
 
-// conteggio variazioni prezzo
-const up = rows.filter(r => r.delta > 0).length;
-const down = rows.filter(r => r.delta < 0).length;
+  var minPrice=rows[0].price.toFixed(3);
+  var maxPrice=rows[rows.length-1].price;
+  var saving=rows.length>1?(maxPrice-rows[0].price).toFixed(3):"0.000";
+  var totalStations=ids.size;
+  var lastUpdate=rows.reduce(function(max,r){
+    var d=r["dtComu"]?new Date(r["dtComu"]).toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"}):"";
+    return d&&d>max?d:max;
+  },"");
+  var up=rows.filter(function(r){ return r.delta>0; }).length;
+  var down=rows.filter(function(r){ return r.delta<0; }).length;
 
-area.innerHTML = `
-<div class="rtitle">
-${selCarb.toUpperCase()} – ${selCom} (${selProv})
+  area.innerHTML='<div class="rtitle">'+
+    selCarb.toUpperCase()+' - '+selCom+' ('+selProv+')'+
+    '<span style="font-size:13px;color:#9ca3af;margin-left:14px">AGG. '+lastUpdate+'</span>'+
+    '<span style="margin-left:20px;color:#f59e0b">TOP '+rows.length+' su '+totalStations+'</span>'+
+    '<span style="margin-left:16px;font-size:12px;color:#9ca3af">'+(up>0?'&#9650; '+up:'')+' '+(down>0?'&#9660; '+down:'')+'</span>'+
+    '<div style="width:100%;color:#fb0000;margin-top:6px">PREZZO MINIMO: '+minPrice+' &euro;/L'+
+    '<span style="color:#22c55e;font-size:12px;margin-left:10px">risparmi '+saving+' &euro;/L</span></div></div>'+
+    '<div class="cards">'+rows.map(function(r,i){ return card(r,i,false); }).join("")+'</div>';
 
-<span style="font-size:13px;color:#9ca3af;margin-left:14px;">
-AGGIORNATO ${lastUpdate}
-</span>
-
-<span style="margin-left:20px;color:#f59e0b;">
-TOP ${rows.length} su ${totalStations}
-</span>
-
-<span style="margin-left:16px;font-size:12px;color:#9ca3af;">
-${up>0?`▲ ${up}`:""} ${down>0?`▼ ${down}`:""}
-</span>
-
-<div style="color:#fb0000;margin-top:6px">
-PREZZO MINIMO: ${minPrice} €/L
-<span style="color:#22c55e;font-size:12px;margin-left:10px">
-risparmi ${saving} €/L
-</span>
-</div>
-
-</div>
-
-<div class="cards">
-${rows.map((r,i)=>card(r,i)).join("")}
-</div>`;
-
-const firstLoad = !map;
-
-drawMap(rows);
-
-if(firstLoad){
-  document.getElementById("map").scrollIntoView({behavior:"smooth"});
-}
+  var firstLoad=!mapObj;
+  drawMap(rows);
+  if(firstLoad) document.getElementById("map").scrollIntoView({behavior:"smooth"});
 }
 
 function focusMarker(i){
-
   if(!markers[i]) return;
-
-  const m = markers[i];
-
-  map.setView(m.getLatLng(), 15, {animate:true});
-
-  m.openPopup();
-
+  mapObj.setView(markers[i].getLatLng(),15,{animate:true});
+  markers[i].openPopup();
 }
 
-
-function card(r,i){
-
-  const brand=r["Bandiera"]||r["gestoreImpianto"]||"";
-  const name=r["Nome Impianto"]||r["gestoreImpianto"]||brand||"Distributore";
-  const addr=[r["Indirizzo"],r["Comune"]].filter(Boolean).join(", ");
-
-  const mu=r["Latitudine"]&&r["Longitudine"]
-  ?`https://www.google.com/maps/dir/?api=1&destination=${r["Latitudine"]},${r["Longitudine"]}`
-  :"";
-
-  const dc=r.delta==null||Math.abs(r.delta)<0.0005?"":r.delta>0?"dup":"ddn";
-
-  const db=r.delta==null?"":(
-    Math.abs(r.delta)<0.0005
-      ?`<span class="db ds">= stabile</span>`
-      :r.delta>0
-        ?`<span class="db du">▲ +${r.delta.toFixed(3)}</span>`
-        :`<span class="db dd">▼ ${r.delta.toFixed(3)}</span>`
-  );
-
-  return `<div class="card${i===0?" top":""} ${dc}" style="animation-delay:${i*.06}s">
-    <div class="rank ${i===0?'best':i===4?'worst':''}">${i+1}</div>
-
-    <div class="ci">
-      <div class="cn">${name}</div>
-      <div class="ca">${addr}</div>
-
-      <div class="cm">
-        ${brand?`<span class="tag tb">${brand}</span>`:""}
-        <span class="tag ${r.self2?"ts":"tv"}">${r.self2?"Self":"Servito"}</span>
-        ${r["dtComu"]?`<span class="tag td">${r["dtComu"].slice(0,16)}</span>`:""}
-        ${db}
-      </div>
-
-${mu?`<a href="${mu}" target="_blank" class="ml" onclick="focusMarker(${i});return true;">🧭 Naviga →</a>`:""}
-    </div>
-
-    <div class="pc">
-      <div class="pm">${r.price.toFixed(3)}</div>
-      <div class="pu">€/litro</div>
-      ${r.prevP!=null?`<div class="pp">prec. ${r.prevP.toFixed(3)}</div>`:""}
-    </div>
-
-  </div>`;
+function card(r,i,showDist){
+  var brand=r["Bandiera"]||r["gestoreImpianto"]||"";
+  var name=r["Nome Impianto"]||r["gestoreImpianto"]||brand||"Distributore";
+  var addr=[r["Indirizzo"],r["Comune"]].filter(Boolean).join(", ");
+  var mu=r["Latitudine"]&&r["Longitudine"]?"https://www.google.com/maps/dir/?api=1&destination="+r["Latitudine"]+","+r["Longitudine"]:"";
+  var dc=r.delta==null||Math.abs(r.delta)<0.0005?"":r.delta>0?"dup":"ddn";
+  var db="";
+  if(r.delta!==null){
+    if(Math.abs(r.delta)<0.0005) db='<span class="db ds">= stabile</span>';
+    else if(r.delta>0) db='<span class="db du">&#9650; +'+r.delta.toFixed(3)+'</span>';
+    else db='<span class="db dd">&#9660; '+r.delta.toFixed(3)+'</span>';
+  }
+  var distHtml=showDist&&r.dist!=null?'<div class="dist-tag">&#128205; '+r.dist.toFixed(1)+' km</div>':"";
+  var rankClass=i===0?"best":i===4?"worst":"";
+  return '<div class="card'+(i===0?" top":"")+" "+dc+'" style="animation-delay:'+(i*.06)+'s">'+
+    '<div class="rank '+rankClass+'">'+(i+1)+'</div>'+
+    '<div class="ci">'+
+      '<div class="cn">'+name+'</div>'+
+      '<div class="ca">'+addr+'</div>'+
+      '<div class="cm">'+
+        (brand?'<span class="tag tb">'+brand+'</span>':'')+
+        '<span class="tag '+(r.self2?"ts":"tv")+'">'+(r.self2?"Self":"Servito")+'</span>'+
+        (r["dtComu"]?'<span class="tag td">'+r["dtComu"].slice(0,16)+'</span>':'')+
+        db+
+      '</div>'+
+      distHtml+
+      (mu?'<a href="'+mu+'" target="_blank" class="ml" onclick="focusMarker('+i+');return true;">&#9711; Naviga &rarr;</a>':'')+
+    '</div>'+
+    '<div class="pc">'+
+      '<div class="pm">'+r.price.toFixed(3)+'</div>'+
+      '<div class="pu">&euro;/litro</div>'+
+      (r.prevP!=null?'<div class="pp">prec. '+r.prevP.toFixed(3)+'</div>':'')+
+    '</div>'+
+  '</div>';
 }
 
 function drawMap(rows){
-
   if(!rows.length) return;
-
-  if(!map){
-    map = L.map("map",{zoomControl:true}).setView([43.2,12.6],6);
-
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution:"© OpenStreetMap" }
-    ).addTo(map);
+  if(!mapObj){
+    mapObj=L.map("map",{zoomControl:true}).setView([43.2,12.6],6);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(mapObj);
   }
-
-  // rimuove marker vecchi
-  markers.forEach(m => m.remove());
-  markers = [];
-
-  const bounds = [];
-
-  rows.forEach((r,i) => {
-
-    if(!r["Latitudine"] || !r["Longitudine"]) return;
-
-    const lat = parseFloat(r["Latitudine"]);
-    const lon = parseFloat(r["Longitudine"]);
-
-    const icon = L.divIcon({
-      className: "marker-num",
-      html: `<div style="
-        background:${i===0 ? '#22c55e' : i===4 ? '#ef4444' : '#2563eb'};
-        color:#000;
-        width:28px;
-        height:28px;
-        border-radius:50%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-weight:bold;
-        font-size:14px;
-        box-shadow:0 0 6px rgba(0,0,0,0.5);
-      ">${i+1}</div>`,
-      iconSize:[28,28],
-      iconAnchor:[14,14]
+  markers.forEach(function(m){ m.remove(); }); markers=[];
+  var bounds=[];
+  rows.forEach(function(r,i){
+    if(!r["Latitudine"]||!r["Longitudine"]) return;
+    var lat=parseFloat(r["Latitudine"]), lon=parseFloat(r["Longitudine"]);
+    var bg=i===0?'#22c55e':i===4?'#ef4444':'#2563eb';
+    var icon=L.divIcon({
+      className:"marker-num",
+      html:'<div style="background:'+bg+';color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;box-shadow:0 0 6px rgba(0,0,0,.5)">'+(i+1)+'</div>',
+      iconSize:[28,28],iconAnchor:[14,14]
     });
-
-    const marker = L.marker([lat, lon],{icon}).addTo(map);
-
-    marker.bindPopup(
-      `<b>${r["Nome Impianto"] || "Distributore"}</b><br>
-      ${r["Indirizzo"] || ""}<br>
-      <b>${r.price.toFixed(3)} €/L</b>`
-    );
-
-    markers.push(marker);
-    bounds.push([lat, lon]);
-
+    var marker=L.marker([lat,lon],{icon:icon}).addTo(mapObj);
+    marker.bindPopup('<b>'+(r["Nome Impianto"]||"Distributore")+'</b><br>'+(r["Indirizzo"]||"")+'<br><b>'+r.price.toFixed(3)+' &euro;/L</b>');
+    markers.push(marker); bounds.push([lat,lon]);
   });
-
-  if(bounds.length){
-    map.fitBounds(bounds,{
-  padding:[40,40],
-  maxZoom:14
-});
-  }
-
-  // aggiorna layout mappa
-  setTimeout(()=>{
-    map.invalidateSize();
-  },100);
-
+  if(bounds.length) mapObj.fitBounds(bounds,{padding:[40,40],maxZoom:14});
+  setTimeout(function(){ mapObj.invalidateSize(); },100);
 }
 
 function goBack(){
@@ -605,40 +559,27 @@ function goBack(){
   document.getElementById("screen-load").style.display="block";
   impText=""; przText="";
   document.getElementById("drop").classList.remove("ok");
-  document.getElementById("drop-icon").textContent="📂";
+  document.getElementById("drop-icon").innerHTML="&#128194;";
   document.getElementById("drop-msg").textContent="Clicca qui o trascina i 2 file CSV";
   document.getElementById("file-tags").innerHTML="";
   document.getElementById("btn-go").classList.remove("on");
   document.getElementById("file-input").value="";
 }
+
 async function provaCaricamentoAutomatico(){
-
   try{
-
-    const t = Date.now();   // evita cache
-    const base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
-
-    const imp = await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
-    const prz = await fetch(base+"prezzo_alle_8.csv?v="+t);
-
-    if(!imp.ok || !prz.ok){
-      console.log("CSV non trovati");
-      return;
-    }
-
-    impText = await imp.text();
-    przText = await prz.text();
-
+    var t=Date.now();
+    var base="https://dariorovedo-dotcom.github.io/prezzi-carburante/";
+    var imp=await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
+    var prz=await fetch(base+"prezzo_alle_8.csv?v="+t);
+    if(!imp.ok||!prz.ok){ console.log("CSV non trovati"); return; }
+    impText=await imp.text();
+    przText=await prz.text();
     elabora();
-
-  }catch(e){
-    console.log("Errore caricamento CSV", e);
-  }
-
+  }catch(e){ console.log("Errore caricamento CSV",e); }
 }
 
-document.addEventListener("DOMContentLoaded", provaCaricamentoAutomatico);
-
+document.addEventListener("DOMContentLoaded",provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
