@@ -655,45 +655,45 @@ function goBack(){
 
 async function provaCaricamentoAutomatico(){
 
-  try{
+  const t = Date.now();
+  const base = "https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/";
 
-    const t = Date.now();
-    const base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
+  async function fetchText(url){
+    const r = await fetch(url);
+    if(!r.ok) throw new Error("File non trovato: "+url);
 
-    async function fetchText(url){
-  const r = await fetch(url);
+    const buf = await r.arrayBuffer();
+    const bytes = new Uint8Array(buf);
 
-  if(!r.ok){
-    throw new Error("File non trovato: " + url);
-  }
-
-  const buf = await r.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-
-  try{
-    return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
-  }catch{
-    return new TextDecoder("windows-1252").decode(bytes);
-  }
-}
-
-    impText = await fetchText(base + "anagrafica_impianti_attivi.csv?v=" + t);
     try{
-  przText = await fetchText(base + "prezzo_alle_8.csv?v=" + t);
-}catch{
-  przText = await fetchText(base + "prezzi_alle_8.csv?v=" + t);
-}
-
-    elabora();
-
-  }catch(e){
-    console.log("Errore caricamento CSV", e);
+      return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+    }catch{
+      return new TextDecoder("windows-1252").decode(bytes);
+    }
   }
 
+  impText = await fetchText(base+"anagrafica_impianti_attivi.csv?v="+t);
+
+  try{
+    przText = await fetchText(base+"prezzo_alle_8.csv?v="+t);
+  }catch{
+    przText = await fetchText(base+"prezzi_alle_8.csv?v="+t);
+  }
+
+  elabora();
 }
 
 document.addEventListener("DOMContentLoaded", function(){
-  setTimeout(provaCaricamentoAutomatico, 500);
+
+  function startAuto(){
+    provaCaricamentoAutomatico().catch(function(){
+      // se fallisce riprova dopo 2 secondi
+      setTimeout(startAuto,2000);
+    });
+  }
+
+  startAuto();
+
 });
 </script>
 </body>
