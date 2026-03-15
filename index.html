@@ -347,10 +347,26 @@ function onProv(){
   updateResults();
 }
 function onCom(){
-  selComTxt=document.getElementById("inp-com").value;
-  const up=N(selComTxt);
-  selCom=(COM_MAP[selProv]||[]).find(c=>N(c)===up)||"";
-  renderSugg(); updateResults();
+
+  selComTxt = document.getElementById("inp-com").value;
+
+  const up = N(selComTxt);
+  const comuni = COM_MAP[selProv] || [];
+
+  if(!up){
+    selCom="";
+  }else{
+
+    const match =
+      comuni.find(c => N(c) === up) ||
+      comuni.find(c => N(c).startsWith(up)) ||
+      comuni.find(c => N(c).includes(up));
+
+    selCom = match || "";
+  }
+
+  renderSugg();
+  updateResults();
 }
 function showSugg(){ renderSugg(); }
 function hideSugg(){ setTimeout(()=>document.getElementById("sugg").style.display="none",200); }
@@ -373,7 +389,7 @@ function setMode(m,el){ selMode=m; document.querySelectorAll(".modes button").fo
 // ── CALCOLA RISULTATI ─────────────────────────────────────────────────────────
 function updateResults(){
   const area=document.getElementById("results");
-  if(!selCom||!selCarb){
+  if(!selProv || !selCom || !selCarb){
     area.innerHTML=`<div class="empty">${!selProv?"⬆ Seleziona una provincia":!selCom?"Scrivi il nome del comune":"Seleziona il carburante"}</div>`;
     return;
   }
@@ -595,21 +611,29 @@ function goBack(){
   document.getElementById("btn-go").classList.remove("on");
   document.getElementById("file-input").value="";
 }
-async function provaCaricamentoAutomatico() {
+async function provaCaricamentoAutomatico(){
 
-  try {
+  try{
 
-    const imp = await fetch("./anagrafica_impianti_attivi.csv");
-    const prz = await fetch("./prezzo_alle_8.csv");
+    const t = Date.now();   // evita cache
+    const base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
 
-    if (!imp.ok || !prz.ok) return;
+    const imp = await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
+    const prz = await fetch(base+"prezzo_alle_8.csv?v="+t);
+
+    if(!imp.ok || !prz.ok){
+      console.log("CSV non trovati");
+      return;
+    }
 
     impText = await imp.text();
     przText = await prz.text();
 
     elabora();
 
-  } catch (e) {}
+  }catch(e){
+    console.log("Errore caricamento CSV", e);
+  }
 
 }
 
