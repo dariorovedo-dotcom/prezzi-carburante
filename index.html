@@ -67,7 +67,7 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .modes button.on { background:rgba(245,158,11,.15); color:#f59e0b; }
 .divider { height:1px; background:rgba(255,255,255,.06); margin:0 2rem; }
 .results-wrap { padding:1rem 2rem 3rem; }
-.rtitle { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.08em; color:#9ca3af; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; }
+.rtitle { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:.08em; color:#9ca3af; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; }
 .rtitle span { font-family:'DM Sans',sans-serif; font-size:.7rem; color:#4b5563; text-transform:uppercase; letter-spacing:.08em; }
 .cards { display:flex; flex-direction:column; gap:.6rem; }
 .card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:4px; padding:1rem 1.2rem; display:grid; grid-template-columns:1.8rem 1fr auto; gap:.9rem; align-items:center; animation:up .25s ease both; }
@@ -77,6 +77,15 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .card.ddn  { border-left:3px solid rgba(74,222,128,.5); }
 @keyframes up { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 .rank { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:#2d3748; line-height:1; text-align:center; }
+.card.top .rank { color:rgba(245,158,11,.4); }
+
+.rank.best{
+  color:#22c55e;
+}
+
+.rank.worst{
+  color:#ef4444;
+}
 .card.top .rank { color:rgba(245,158,11,.4); }
 .ci { min-width:0; }
 .cn { font-size:.87rem; font-weight:600; color:#e8e0d0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -390,9 +399,15 @@ function updateResults(){
 
 const minPrice = rows[0].price.toFixed(3);
 
+const maxPrice = rows[rows.length-1].price;
+const saving = rows.length > 1 ? (maxPrice - rows[0].price).toFixed(3) : "0.000";
+const totalStations = ids.size;
+
 // ultima data comunicata dai distributori
 const lastUpdate = rows.reduce((max,r)=>{
-  const d = r["dtComu"]?.slice(0,16);
+  const d = r["dtComu"]
+  ? new Date(r["dtComu"]).toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"})
+  : "";
   return d && d>max ? d : max;
 },"");
 
@@ -402,14 +417,14 @@ const down = rows.filter(r => r.delta < 0).length;
 
 area.innerHTML = `
 <div class="rtitle">
-DISTRIBUTORI A ${selCom} 
+${selCarb.toUpperCase()} – ${selCom} (${selProv})
 
 <span style="font-size:13px;color:#9ca3af;margin-left:14px;">
 AGGIORNATO ${lastUpdate}
 </span>
 
 <span style="margin-left:20px;color:#f59e0b;">
-TOP ${rows.length}
+TOP ${rows.length} su ${totalStations}
 </span>
 
 <span style="margin-left:16px;font-size:12px;color:#9ca3af;">
@@ -418,6 +433,9 @@ ${up>0?`▲ ${up}`:""} ${down>0?`▼ ${down}`:""}
 
 <div style="color:#fb0000;margin-top:6px">
 PREZZO MINIMO: ${minPrice} €/L
+<span style="color:#22c55e;font-size:12px;margin-left:10px">
+risparmi ${saving} €/L
+</span>
 </div>
 
 </div>
@@ -469,7 +487,7 @@ function card(r,i){
   );
 
   return `<div class="card${i===0?" top":""} ${dc}" style="animation-delay:${i*.06}s">
-    <div class="rank">${i+1}</div>
+    <div class="rank ${i===0?'best':i===4?'worst':''}">${i+1}</div>
 
     <div class="ci">
       <div class="cn">${name}</div>
@@ -523,7 +541,7 @@ function drawMap(rows){
     const icon = L.divIcon({
       className: "marker-num",
       html: `<div style="
-        background:${i===0 ? '#fbbf24' : '#2563eb'};
+        background:${i===0 ? '#22c55e' : i===4 ? '#ef4444' : '#2563eb'};
         color:#000;
         width:28px;
         height:28px;
@@ -609,3 +627,4 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
