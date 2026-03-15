@@ -596,34 +596,25 @@ function goBack(){
   document.getElementById("file-input").value="";
 }
 async function provaCaricamentoAutomatico() {
-  try {
 
-    console.log("Tentativo caricamento automatico CSV");
+  try {
 
     const imp = await fetch("./anagrafica_impianti_attivi.csv");
     const prz = await fetch("./prezzo_alle_8.csv");
 
-    console.log("Status impianti:", imp.status);
-    console.log("Status prezzi:", prz.status);
-
-    if (!imp.ok || !prz.ok) {
-      console.log("File non trovati");
-      return;
-    }
+    if (!imp.ok || !prz.ok) return;
 
     impText = await imp.text();
     przText = await prz.text();
 
-    console.log("CSV caricati, avvio elaborazione");
-
     elabora();
 
-  } catch (e) {
-    console.log("Errore caricamento automatico:", e);
-  }
+  } catch (e) {}
+
 }
 
-window.addEventListener("load", provaCaricamentoAutomatico);
+document.addEventListener("DOMContentLoaded", provaCaricamentoAutomatico);
+
 </script>
 </body>
 </html>
