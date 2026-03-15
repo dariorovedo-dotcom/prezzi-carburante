@@ -223,21 +223,60 @@ async function onFiles(files){
 }
 
 function parseCSV(text){
-  var lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
-  while(lines.length&&!lines[0].includes("|")&&!lines[0].includes(";")) lines.shift();
-  if(lines.length<2) return [];
-  var sep=lines[0].includes("|")?"|":";";
-  var hdr=lines[0].split(sep).map(function(h){ return h.trim().replace(/"/g,""); });
-  var rows=[];
-  for(var i=1;i<lines.length;i++){
-    if(!lines[i].trim()) continue;
-    var v=lines[i].split(sep).map(function(s){ return s.trim().replace(/"/g,""); });
-    var r={}; hdr.forEach(function(h,j){ r[h]=v[j]!==undefined?v[j]:""; }); rows.push(r);
+
+  // normalizza ritorni a capo
+  var lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
+
+  // salta eventuali righe prima dell'intestazione
+  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")){
+    lines.shift();
   }
+
+  if(lines.length < 2) return [];
+
+  var sep = lines[0].includes("|") ? "|" : ";";
+
+  // pulizia intestazioni (rimuove BOM e spazi strani)
+  var hdr = lines[0].split(sep).map(function(h){
+    return h
+      .replace(/\uFEFF/g,"")   // rimuove BOM invisibile
+      .replace(/"/g,"")
+      .trim();
+  });
+
+  var rows = [];
+
+  for(var i=1;i<lines.length;i++){
+
+    if(!lines[i].trim()) continue;
+
+    var v = lines[i].split(sep).map(function(s){
+      return s.replace(/"/g,"").trim();
+    });
+
+    var r = {};
+
+    hdr.forEach(function(h,j){
+      r[h] = v[j] !== undefined ? v[j] : "";
+    });
+
+    rows.push(r);
+
+  }
+
   return rows;
 }
 
 function N(s){ return (s||"").toUpperCase().trim(); }
+function getId(r){
+  return (
+    r["idImpianto"] ||
+    r["IdImpianto"] ||
+    r["id_impianto"] ||
+    r["idimpianto"] ||
+    ""
+  ).trim();
+}
 function pk(id,c,s){ return id+"|"+N(c)+"|"+s; }
 
 function elabora(){
@@ -250,11 +289,20 @@ function elabora(){
   if(!impRows.length){ showErr("Il file impianti non sembra valido. Riprova."); return; }
   IMP={}; var provSet=new Set(); COM_MAP={};
   impRows.forEach(function(r){
-    var id=r["idImpianto"]||r["id_impianto"]||"";
-    if(id) IMP[id]=r;
-    var p=N(r["Provincia"]),c=N(r["Comune"]);
-    if(p){ provSet.add(p); if(!COM_MAP[p])COM_MAP[p]=new Set(); if(c)COM_MAP[p].add(c); }
-  });
+
+  var id = getId(r);
+  if(id) IMP[id] = r;
+
+  var p = N(r["Provincia"] || r["provincia"]);
+  var c = N(r["Comune"] || r["comune"]);
+
+  if(p){
+    provSet.add(p);
+    if(!COM_MAP[p]) COM_MAP[p] = new Set();
+    if(c) COM_MAP[p].add(c);
+  }
+
+});
   PROV=Array.from(provSet).sort();
   PROV.forEach(function(p){ COM_MAP[p]=Array.from(COM_MAP[p]).sort(); });
   PRZ=parseCSV(przText);
@@ -263,7 +311,7 @@ function elabora(){
   var today=new Date().toISOString().slice(0,10);
   var todayMap={};
   PRZ.forEach(function(r){
-    var id=r["idImpianto"]||r["id_impianto"]||"";
+  var id = getId(r);
     var p=parseFloat((r["prezzo"]||"0").replace(",","."));
     if(id&&r["descCarburante"]&&p>0) todayMap[pk(id,r["descCarburante"],r["isSelf"])]=p;
   });
@@ -406,13 +454,13 @@ function updateResults(){
       if(N(r["descCarburante"])!==N(selCarb)) return false;
       if(selMode==="self"&&r["isSelf"]!=="1") return false;
       if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-      var id=r["idImpianto"]||r["id_impianto"]||"";
+      var id = getId(r);
       var imp=IMP[id]; if(!imp) return false;
       var la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
       if(!la||!lo) return false;
       return haversine(userLat,userLon,la,lo)<=geoKm;
     }).map(function(r){
-      var id=r["idImpianto"]||r["id_impianto"]||"";
+      var id = getId(r);
       var price=parseFloat((r["prezzo"]||"0").replace(",","."));
       var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
       if(prevP===undefined) prevP=null;
@@ -444,21 +492,44 @@ function updateResults(){
     return;
   }
 
-  var ids=new Set(Object.entries(IMP).filter(function(e){ var s=e[1]; return N(s["Provincia"])===selProv&&N(s["Comune"])===selCom; }).map(function(e){ return e[0]; }));
-  var rows=PRZ.filter(function(r){
-    var id=r["idImpianto"]||r["id_impianto"]||"";
-    if(!ids.has(id)||N(r["descCarburante"])!==N(selCarb)) return false;
-    if(selMode==="self"&&r["isSelf"]!=="1") return false;
-    if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-    return true;
-  }).map(function(r){
-    var id=r["idImpianto"]||r["id_impianto"]||"";
-    var price=parseFloat((r["prezzo"]||"0").replace(",","."));
-    var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
-    if(prevP===undefined) prevP=null;
-    var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
-    return Object.assign({},r,IMP[id]||{},{price:price,self2:r["isSelf"]==="1",prevP:prevP,delta:delta});
-  }).filter(function(r){ return r.price>0; }).sort(function(a,b){ return a.price-b.price; }).slice(0,5);
+var ids=new Set(Object.entries(IMP).filter(function(e){
+  var s=e[1];
+  return N(s["Provincia"]||s["provincia"])===selProv &&
+         N(s["Comune"]||s["comune"])===selCom;
+}).map(function(e){ return e[0]; }));
+  var rows = PRZ.filter(function(r){
+
+  var id = getId(r);
+
+  if(!ids.has(id) || N(r["descCarburante"]) !== N(selCarb)) return false;
+  if(selMode === "self" && r["isSelf"] !== "1") return false;
+  if(selMode === "servito" && r["isSelf"] !== "0") return false;
+
+  return true;
+
+}).map(function(r){
+
+  var id = getId(r);
+
+  var price = parseFloat((r["prezzo"] || "0").replace(",", "."));
+  var prevP = PREV[pk(id, r["descCarburante"], r["isSelf"])];
+
+  if(prevP === undefined) prevP = null;
+
+  var delta = (prevP !== null && price > 0) ? +(price - prevP).toFixed(4) : null;
+
+  return Object.assign({}, r, IMP[id] || {}, {
+    price: price,
+    self2: r["isSelf"] === "1",
+    prevP: prevP,
+    delta: delta
+  });
+
+}).filter(function(r){
+  return r.price > 0;
+}).sort(function(a,b){
+  return a.price - b.price;
+}).slice(0,5);
 
   if(!rows.length){ area.innerHTML='<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalit&agrave; o carburante.</div>'; return; }
 
@@ -570,22 +641,26 @@ async function provaCaricamentoAutomatico(){
 
   try{
 
-    const t = Date.now();   // evita cache
+    const t = Date.now();
     const base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
 
-    const imp = await fetch(base + "anagrafica_impianti_attivi.csv?v=" + t);
-    const prz = await fetch(base + "prezzo_alle_8.csv?v=" + t);
-
-    if(!imp.ok || !prz.ok){
-      console.log("CSV non trovati");
-      return;
+    async function fetchText(url){
+      const r = await fetch(url);
+      const buf = await r.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      try{
+        return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+      }catch{
+        return new TextDecoder("windows-1252").decode(bytes);
+      }
     }
 
-    // lettura semplice (funziona su GitHub Pages)
-    impText = await imp.text();
-    przText = await prz.text();
-
-    console.log("CSV caricati:", impText.length, przText.length);
+    impText = await fetchText(base + "anagrafica_impianti_attivi.csv?v=" + t);
+    try{
+  przText = await fetchText(base + "prezzo_alle_8.csv?v=" + t);
+}catch{
+  przText = await fetchText(base + "prezzi_alle_8.csv?v=" + t);
+}
 
     elabora();
 
@@ -595,7 +670,9 @@ async function provaCaricamentoAutomatico(){
 
 }
 
-document.addEventListener("DOMContentLoaded", provaCaricamentoAutomatico);
+document.addEventListener("DOMContentLoaded", function(){
+  setTimeout(provaCaricamentoAutomatico, 500);
+});
 </script>
 </body>
 </html>
