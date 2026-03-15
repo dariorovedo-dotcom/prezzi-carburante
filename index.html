@@ -655,20 +655,26 @@ function goBack(){
 
 async function provaCaricamentoAutomatico() {
 
+  document.getElementById("drop-msg").textContent = "Caricamento dati in corso...";
+  document.getElementById("drop-icon").innerHTML = "⏳";
+
   try {
 
-    const imp = await fetch("https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/anagrafica_impianti_attivi.csv");
-    const prz = await fetch("https://raw.githubusercontent.com/dariorovedo/prezzi-carburante/main/prezzo_alle_8.csv");
+    const imp = await fetch("https://dariorovedo-dotcom.github.io/prezzi-carburante/anagrafica_impianti_attivi.csv?"+Date.now());
+    const prz = await fetch("https://dariorovedo-dotcom.github.io/prezzi-carburante/prezzo_alle_8.csv?"+Date.now());
 
-    if (!imp.ok || !prz.ok) {
-      console.log("CSV non trovati");
-      return;
-    }
+    if(!imp.ok || !prz.ok){
+  console.log("Errore download CSV", imp.status, prz.status);
+  return;
+}
 
-    impText = await imp.text();
-    przText = await prz.text();
+impText = await imp.text();
+przText = await prz.text();
 
-    elabora();
+    document.getElementById("btn-go").classList.add("on");
+    document.getElementById("drop").classList.add("ok");
+
+    setTimeout(elabora, 100);
 
   } catch(e) {
     console.log("Errore:", e);
