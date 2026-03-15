@@ -568,16 +568,13 @@ function goBack(){
 
 async function provaCaricamentoAutomatico(){
   try{
-    var t=Date.now();
-    var base="https://dariorovedo-dotcom.github.io/prezzi-carburante/";
-    var imp=await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
-    var prz=await fetch(base+"prezzo_alle_8.csv?v="+t);
+    var imp=await fetch("./anagrafica_impianti_attivi.csv");
+    var prz=await fetch("./prezzo_alle_8.csv");
     if(!imp.ok||!prz.ok){ console.log("CSV non trovati"); return; }
     var impT=await imp.text();
     var przT=await prz.text();
-    // Verifica che siano veri CSV e non pagine HTML
     if(impT.trim().startsWith("<")||przT.trim().startsWith("<")){
-      console.log("GitHub Pages ha restituito HTML invece di CSV - usa il caricamento manuale");
+      console.log("Risposta non valida - usa il caricamento manuale");
       return;
     }
     impText=impT;
