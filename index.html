@@ -67,7 +67,37 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .modes button.on { background:rgba(245,158,11,.15); color:#f59e0b; }
 .divider { height:1px; background:rgba(255,255,255,.06); margin:0 2rem; }
 .results-wrap { padding:1rem 2rem 3rem; }
-.rtitle { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.08em; color:#9ca3af; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; }
+.rtitle{
+display:flex;
+flex-direction:column;
+gap:6px;
+margin-bottom:14px;
+padding-bottom:6px;
+border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.rline1{
+font-family:'Bebas Neue',sans-serif;
+font-size:1.25rem;
+letter-spacing:.08em;
+color:#9ca3af;
+}
+
+.rline2{
+font-size:14px;
+color:#e5e7eb;
+}
+
+.rtop{
+color:#f59e0b;
+margin-left:10px;
+}
+
+.rsave{
+color:#22c55e;
+margin-left:10px;
+font-size:12px;
+}
 .rtitle span { font-family:'DM Sans',sans-serif; font-size:.7rem; color:#4b5563; text-transform:uppercase; letter-spacing:.08em; }
 .cards { display:flex; flex-direction:column; gap:.6rem; }
 .card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:4px; padding:1rem 1.2rem; display:grid; grid-template-columns:1.8rem 1fr auto; gap:.9rem; align-items:center; animation:up .25s ease both; }
@@ -452,7 +482,7 @@ function updateResults(){
     const sav=geoRows.length>1?(geoRows[geoRows.length-1].price-geoRows[0].price).toFixed(3):"0.000";
     area.innerHTML=`
       <div class="rtitle">${selCarb.toUpperCase()} – entro ${geoKm} km
-        <span style="color:#f59e0b">TOP ${geoRows.length}</span>
+        <span style="color:#f59e0b">${geoRows.length} distributori</span>
         <div style="width:100%;color:#fb0000;margin-top:6px;font-size:.95rem">PREZZO MINIMO: ${minP} €/L
           <span style="color:#22c55e;font-size:12px;margin-left:8px">risparmi ${sav} €/L</span>
         </div>
@@ -487,6 +517,9 @@ function updateResults(){
   if(!rows.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
 
 const minPrice = rows[0].price.toFixed(3);
+const risparmio = rows.length > 1
+  ? (rows[rows.length-1].price - rows[0].price).toFixed(3)
+  : "0.000";
 
 // ultima data comunicata dai distributori
 const lastUpdate = rows
@@ -499,31 +532,28 @@ const lastUpdate = rows
 const up = rows.filter(r => r.delta > 0).length;
 const down = rows.filter(r => r.delta < 0).length;
 
-area.innerHTML = `
-<div class="title">
-DISTRIBUTORI – ${selCom} (${selProv})
+area.innerHTML=`
+<div class="rtitle">
 
-<span style="font-size:13px;color:#9ca3af;margin-left:14px;">
-AGGIORNATO ${lastUpdate}
-</span>
+  <div class="rline1">
+    ${selCarb.toUpperCase()} – ${selCom}
+    <span class="rtop">TOP ${rows.length}</span>
+  </div>
 
-<span style="margin-left:20px;">
-TOP ${rows.length}
-</span>
-
-<span style="margin-left:16px;font-size:12px;color:#9ca3af;">
-${up>0?`▲ ${up}`:""} ${down>0?`▼ ${down}`:""}
-</span>
-
-<div style="color:#fb0000;margin-top:6px">
-PREZZO MINIMO: ${minPrice} €/L
-</div>
+  <div class="rline2">
+    PREZZO MINIMO: ${minPrice} €/L
+    <span class="rsave">risparmi ${risparmio} €/L</span>
+    <span style="color:#6b7280;margin-left:10px;font-size:12px">
+      agg. ${lastUpdate}
+    </span>
+  </div>
 
 </div>
 
 <div class="cards">
 ${rows.map((r,i)=>card(r,i,false)).join("")}
-</div>`;
+</div>
+`;
 }
 
 function card(r,i,showDist){
