@@ -23,7 +23,7 @@ jobs:
       - name: Download prezzi
         run: |
           curl -L --max-time 120 --retry 3 -o prezzo_alle_8.csv \
-          https://www.mimit.gov.it/images/exportCSV/prezzi.csv
+          https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv
 
       - name: Commit e push
         run: |
