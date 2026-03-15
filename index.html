@@ -568,15 +568,28 @@ function goBack(){
 
 async function provaCaricamentoAutomatico(){
   try{
-    var t=Date.now();
-    var base="https://dariorovedo-dotcom.github.io/prezzi-carburante/";
-    var imp=await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
-    var prz=await fetch(base+"prezzo_alle_8.csv?v="+t);
-    if(!imp.ok||!prz.ok){ console.log("CSV non trovati"); return; }
-    impText=await imp.text();
-    przText=await prz.text();
+    var t = Date.now();
+    var base = "https://dariorovedo-dotcom.github.io/prezzi-carburante/";
+
+    async function fetchText(url){
+      const r = await fetch(url);
+      const buf = await r.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      try {
+        return new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+      } catch {
+        return new TextDecoder("windows-1252").decode(bytes);
+      }
+    }
+
+    impText = await fetchText(base+"anagrafica_impianti_attivi.csv?v="+t);
+    przText = await fetchText(base+"prezzo_alle_8.csv?v="+t);
+
     elabora();
-  }catch(e){ console.log("Errore caricamento CSV",e); }
+
+  }catch(e){
+    console.log("Errore caricamento CSV", e);
+  }
 }
 
 document.addEventListener("DOMContentLoaded",provaCaricamentoAutomatico);
