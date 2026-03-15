@@ -223,60 +223,21 @@ async function onFiles(files){
 }
 
 function parseCSV(text){
-
-  // normalizza ritorni a capo
-  var lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
-
-  // salta eventuali righe prima dell'intestazione
-  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")){
-    lines.shift();
-  }
-
-  if(lines.length < 2) return [];
-
-  var sep = lines[0].includes("|") ? "|" : ";";
-
-  // pulizia intestazioni (rimuove BOM e spazi strani)
-  var hdr = lines[0].split(sep).map(function(h){
-    return h
-      .replace(/\uFEFF/g,"")   // rimuove BOM invisibile
-      .replace(/"/g,"")
-      .trim();
-  });
-
-  var rows = [];
-
+  var lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
+  while(lines.length&&!lines[0].includes("|")&&!lines[0].includes(";")) lines.shift();
+  if(lines.length<2) return [];
+  var sep=lines[0].includes("|")?"|":";";
+  var hdr=lines[0].split(sep).map(function(h){ return h.trim().replace(/"/g,""); });
+  var rows=[];
   for(var i=1;i<lines.length;i++){
-
     if(!lines[i].trim()) continue;
-
-    var v = lines[i].split(sep).map(function(s){
-      return s.replace(/"/g,"").trim();
-    });
-
-    var r = {};
-
-    hdr.forEach(function(h,j){
-      r[h] = v[j] !== undefined ? v[j] : "";
-    });
-
-    rows.push(r);
-
+    var v=lines[i].split(sep).map(function(s){ return s.trim().replace(/"/g,""); });
+    var r={}; hdr.forEach(function(h,j){ r[h]=v[j]!==undefined?v[j]:""; }); rows.push(r);
   }
-
   return rows;
 }
 
 function N(s){ return (s||"").toUpperCase().trim(); }
-function getId(r){
-  return (
-    r["idImpianto"] ||
-    r["IdImpianto"] ||
-    r["id_impianto"] ||
-    r["idimpianto"] ||
-    ""
-  ).trim();
-}
 function pk(id,c,s){ return id+"|"+N(c)+"|"+s; }
 
 function elabora(){
@@ -289,44 +250,23 @@ function elabora(){
   if(!impRows.length){ showErr("Il file impianti non sembra valido. Riprova."); return; }
   IMP={}; var provSet=new Set(); COM_MAP={};
   impRows.forEach(function(r){
-
-  var id = getId(r);
-  if(id) IMP[id] = r;
-
-  var p = N(r["Provincia"] || r["provincia"]);
-  var c = N(r["Comune"] || r["comune"]);
-
-  if(p){
-    provSet.add(p);
-    if(!COM_MAP[p]) COM_MAP[p] = new Set();
-    if(c) COM_MAP[p].add(c);
-  }
-
-});
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    if(id) IMP[id]=r;
+    var p=N(r["Provincia"]),c=N(r["Comune"]);
+    if(p){ provSet.add(p); if(!COM_MAP[p])COM_MAP[p]=new Set(); if(c)COM_MAP[p].add(c); }
+  });
   PROV=Array.from(provSet).sort();
   PROV.forEach(function(p){ COM_MAP[p]=Array.from(COM_MAP[p]).sort(); });
   PRZ=parseCSV(przText);
   if(!PRZ.length){ showErr("Il file prezzi non sembra valido. Riprova."); return; }
-  CARB = Array.from(
-  new Set(
-    PRZ.map(function(r){
-      return r["descCarburante"] || r["DescCarburante"];
-    }).filter(Boolean)
-  )
-).sort();
+  CARB=Array.from(new Set(PRZ.map(function(r){ return r["descCarburante"]; }).filter(Boolean))).sort();
   var today=new Date().toISOString().slice(0,10);
   var todayMap={};
   PRZ.forEach(function(r){
-
-  var id = getId(r);
-  var carb = r["descCarburante"] || r["DescCarburante"];
-  var p = parseFloat((r["prezzo"] || "0").replace(",", "."));
-
-  if(id && carb && p > 0){
-    todayMap[pk(id, carb, r["isSelf"])] = p;
-  }
-
-});
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    var p=parseFloat((r["prezzo"]||"0").replace(",","."));
+    if(id&&r["descCarburante"]&&p>0) todayMap[pk(id,r["descCarburante"],r["isSelf"])]=p;
+  });
   var snap=null;
   try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch(ex){}
   if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
@@ -463,20 +403,18 @@ function updateResults(){
   if(geoMode && userLat!==null){
     if(!selCarb){ area.innerHTML='<div class="empty">Seleziona il carburante</div>'; return; }
     var geoRows=PRZ.filter(function(r){
-      var carb = r["descCarburante"] || r["DescCarburante"];
-if(N(carb) !== N(selCarb)) return false;
+      if(N(r["descCarburante"])!==N(selCarb)) return false;
       if(selMode==="self"&&r["isSelf"]!=="1") return false;
       if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-      var id = getId(r);
+      var id=r["idImpianto"]||r["id_impianto"]||"";
       var imp=IMP[id]; if(!imp) return false;
       var la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
       if(!la||!lo) return false;
       return haversine(userLat,userLon,la,lo)<=geoKm;
     }).map(function(r){
-      var id = getId(r);
+      var id=r["idImpianto"]||r["id_impianto"]||"";
       var price=parseFloat((r["prezzo"]||"0").replace(",","."));
-var carb = r["descCarburante"] || r["DescCarburante"];
-var prevP = PREV[pk(id, N(carb), r["isSelf"])];
+      var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
       if(prevP===undefined) prevP=null;
       var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
       var imp=Object.assign({},IMP[id]||{});
@@ -506,46 +444,21 @@ var prevP = PREV[pk(id, N(carb), r["isSelf"])];
     return;
   }
 
-var ids=new Set(Object.entries(IMP).filter(function(e){
-  var s=e[1];
-  return N(s["Provincia"]||s["provincia"])===selProv &&
-         N(s["Comune"]||s["comune"])===selCom;
-}).map(function(e){ return e[0]; }));
-  var rows = PRZ.filter(function(r){
-
-  var id = getId(r);
-  var carb = r["descCarburante"] || r["DescCarburante"];
-
-  if(!ids.has(id) || N(carb) !== N(selCarb)) return false;
-  if(selMode === "self" && r["isSelf"] !== "1") return false;
-  if(selMode === "servito" && r["isSelf"] !== "0") return false;
-
-  return true;
-
-}).map(function(r){
-
-  var id = getId(r);
-
-  var price = parseFloat((r["prezzo"] || "0").replace(",", "."));
-  var carb = r["descCarburante"] || r["DescCarburante"];
-var prevP = PREV[pk(id, carb, r["isSelf"])];
-
-  if(prevP === undefined) prevP = null;
-
-  var delta = (prevP !== null && price > 0) ? +(price - prevP).toFixed(4) : null;
-
-  return Object.assign({}, r, IMP[id] || {}, {
-    price: price,
-    self2: r["isSelf"] === "1",
-    prevP: prevP,
-    delta: delta
-  });
-
-}).filter(function(r){
-  return r.price > 0;
-}).sort(function(a,b){
-  return a.price - b.price;
-}).slice(0,5);
+  var ids=new Set(Object.entries(IMP).filter(function(e){ var s=e[1]; return N(s["Provincia"])===selProv&&N(s["Comune"])===selCom; }).map(function(e){ return e[0]; }));
+  var rows=PRZ.filter(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    if(!ids.has(id)||N(r["descCarburante"])!==N(selCarb)) return false;
+    if(selMode==="self"&&r["isSelf"]!=="1") return false;
+    if(selMode==="servito"&&r["isSelf"]!=="0") return false;
+    return true;
+  }).map(function(r){
+    var id=r["idImpianto"]||r["id_impianto"]||"";
+    var price=parseFloat((r["prezzo"]||"0").replace(",","."));
+    var prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])];
+    if(prevP===undefined) prevP=null;
+    var delta=(prevP!==null&&price>0)?+(price-prevP).toFixed(4):null;
+    return Object.assign({},r,IMP[id]||{},{price:price,self2:r["isSelf"]==="1",prevP:prevP,delta:delta});
+  }).filter(function(r){ return r.price>0; }).sort(function(a,b){ return a.price-b.price; }).slice(0,5);
 
   if(!rows.length){ area.innerHTML='<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalit&agrave; o carburante.</div>'; return; }
 
@@ -653,37 +566,27 @@ function goBack(){
   document.getElementById("file-input").value="";
 }
 
-async function provaCaricamentoAutomatico() {
-
-  document.getElementById("drop-msg").textContent = "Caricamento dati in corso...";
-  document.getElementById("drop-icon").innerHTML = "⏳";
-
-  try {
-
-    const imp = await fetch("https://dariorovedo-dotcom.github.io/prezzi-carburante/anagrafica_impianti_attivi.csv?"+Date.now());
-    const prz = await fetch("https://dariorovedo-dotcom.github.io/prezzi-carburante/prezzo_alle_8.csv?"+Date.now());
-
-    if(!imp.ok || !prz.ok){
-  console.log("Errore download CSV", imp.status, prz.status);
-  return;
+async function provaCaricamentoAutomatico(){
+  try{
+    var t=Date.now();
+    var base="https://dariorovedo-dotcom.github.io/prezzi-carburante/";
+    var imp=await fetch(base+"anagrafica_impianti_attivi.csv?v="+t);
+    var prz=await fetch(base+"prezzo_alle_8.csv?v="+t);
+    if(!imp.ok||!prz.ok){ console.log("CSV non trovati"); return; }
+    var impT=await imp.text();
+    var przT=await prz.text();
+    // Verifica che siano veri CSV e non pagine HTML
+    if(impT.trim().startsWith("<")||przT.trim().startsWith("<")){
+      console.log("GitHub Pages ha restituito HTML invece di CSV - usa il caricamento manuale");
+      return;
+    }
+    impText=impT;
+    przText=przT;
+    elabora();
+  }catch(e){ console.log("Errore caricamento CSV",e); }
 }
 
-impText = await imp.text();
-przText = await prz.text();
-
-    document.getElementById("btn-go").classList.add("on");
-    document.getElementById("drop").classList.add("ok");
-
-    setTimeout(elabora, 100);
-
-  } catch(e) {
-    console.log("Errore:", e);
-  }
-
-}
-
-window.addEventListener("load", provaCaricamentoAutomatico);
-
-  </script>
+document.addEventListener("DOMContentLoaded",provaCaricamentoAutomatico);
+</script>
 </body>
 </html>
