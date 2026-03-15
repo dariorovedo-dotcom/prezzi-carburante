@@ -17,12 +17,12 @@ jobs:
 
       - name: Download anagrafica
         run: |
-          curl -L -o anagrafica_impianti_attivi.csv \
+          curl -L --max-time 120 --retry 3 -o anagrafica_impianti_attivi.csv \
           https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
 
       - name: Download prezzi
         run: |
-          curl -L -o prezzo_alle_8.csv \
+          curl -L --max-time 120 --retry 3 -o prezzo_alle_8.csv \
           https://www.mimit.gov.it/images/exportCSV/prezzi.csv
 
       - name: Commit e push
