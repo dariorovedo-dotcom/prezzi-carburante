@@ -37,7 +37,7 @@ jobs:
           if grep -q "|" prezzi_tmp.csv; then
             LINES=$(wc -l < prezzi_tmp.csv)
             echo "Righe prezzi: $LINES"
-            if [ "$LINES" -lt 7400 ]; then
+            if [ "$LINES" -lt 74000 ]; then
               echo "❌ Prezzi incompleti: solo $LINES righe"
               exit 1
             fi
