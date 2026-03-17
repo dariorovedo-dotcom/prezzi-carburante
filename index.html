@@ -141,9 +141,42 @@ font-size:12px;
 .geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 .dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
 @media(max-width:480px){ .card { grid-template-columns:1fr auto; } .rank { display:none; } }
+
+/* ── BANNER CARICAMENTO AUTOMATICO ── */
+#auto-loading {
+  position:fixed; inset:0; z-index:999;
+  background:rgba(10,12,16,.92);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:1rem;
+}
+#auto-loading.hidden { display:none; }
+.loading-spinner {
+  width:36px; height:36px;
+  border:3px solid rgba(245,158,11,.2);
+  border-top-color:#f59e0b;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-msg {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.3rem; letter-spacing:.1em;
+  color:#f59e0b;
+}
+.loading-sub {
+  font-size:.78rem; color:#6b7280; text-align:center; line-height:1.6;
+}
 </style>
 </head>
 <body>
+
+<!-- BANNER CARICAMENTO AUTOMATICO -->
+<div id="auto-loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-msg">Un attimo di pazienza</div>
+  <div class="loading-sub">Sto caricando i dati in automatico…</div>
+</div>
 
 <div class="header">
   <div class="title">PREZZI<br>CARBURANTE</div>
@@ -617,6 +650,7 @@ function goBack(){
   document.getElementById("file-input").value="";
 }
 async function provaCaricamentoAutomatico() {
+  const banner = document.getElementById("auto-loading");
   try {
 
     console.log("Tentativo caricamento automatico CSV");
@@ -629,6 +663,7 @@ async function provaCaricamentoAutomatico() {
 
     if (!imp.ok || !prz.ok) {
       console.log("File non trovati");
+      banner.classList.add("hidden");
       return;
     }
 
@@ -637,10 +672,12 @@ async function provaCaricamentoAutomatico() {
 
     console.log("CSV caricati, avvio elaborazione");
 
+    banner.classList.add("hidden");
     elabora();
 
   } catch (e) {
     console.log("Errore caricamento automatico:", e);
+    banner.classList.add("hidden");
   }
 }
 
