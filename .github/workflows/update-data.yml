@@ -1,18 +1,14 @@
 name: Update Data
-
 permissions:
   contents: write
-
 on:
   schedule:
     - cron: "30 8 * * *"
     - cron: "0 15 * * *"
   workflow_dispatch:
-
 jobs:
   update:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,11 +17,16 @@ jobs:
         run: |
           curl -L --max-time 120 --retry 3 -o anagrafica_tmp.csv \
           https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
-
           if grep -q "|" anagrafica_tmp.csv; then
+            LINES=$(wc -l < anagrafica_tmp.csv)
+            echo "Righe anagrafica: $LINES"
+            if [ "$LINES" -lt 18000 ]; then
+              echo "❌ Anagrafica incompleta: solo $LINES righe"
+              exit 1
+            fi
             mv anagrafica_tmp.csv anagrafica_impianti_attivi.csv
           else
-            echo "Errore: file anagrafica non valido"
+            echo "❌ Errore: file anagrafica non valido"
             exit 1
           fi
 
@@ -33,11 +34,16 @@ jobs:
         run: |
           curl -L --max-time 120 --retry 3 -o prezzi_tmp.csv \
           https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv
-
           if grep -q "|" prezzi_tmp.csv; then
+            LINES=$(wc -l < prezzi_tmp.csv)
+            echo "Righe prezzi: $LINES"
+            if [ "$LINES" -lt 7400 ]; then
+              echo "❌ Prezzi incompleti: solo $LINES righe"
+              exit 1
+            fi
             mv prezzi_tmp.csv prezzo_alle_8.csv
           else
-            echo "Errore: file prezzi non valido"
+            echo "❌ Errore: file prezzi non valido"
             exit 1
           fi
 
