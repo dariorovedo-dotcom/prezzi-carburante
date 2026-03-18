@@ -1,56 +1,77 @@
-name: Update Data
-permissions:
-  contents: write
+name: Aggiorna i dati
+
 on:
   schedule:
-    - cron: "30 8 * * *"
-    - cron: "0 15 * * *"
-  workflow_dispatch:
+    # Ogni ora dalle 6:00 alle 16:00 UTC = 8:00-18:00 ora italiana (ora legale UTC+2)
+    # In inverno (UTC+1) corrisponde alle 7:00-17:00 italiane — comunque adeguato
+    - cron: '0 6 * * *'
+    - cron: '0 7 * * *'
+    - cron: '0 8 * * *'
+    - cron: '0 9 * * *'
+    - cron: '0 10 * * *'
+    - cron: '0 11 * * *'
+    - cron: '0 12 * * *'
+    - cron: '0 13 * * *'
+    - cron: '0 14 * * *'
+    - cron: '0 15 * * *'
+    - cron: '0 16 * * *'
+  workflow_dispatch:  # permette anche l'avvio manuale
+
 jobs:
-  update:
+  controlla-e-aggiorna:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download anagrafica
+      - name: Scarica solo la prima riga del CSV prezzi
         run: |
-          curl -L --max-time 120 --retry 3 -o anagrafica_tmp.csv \
-          https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv
-          if grep -q "|" anagrafica_tmp.csv; then
-            LINES=$(wc -l < anagrafica_tmp.csv)
-            echo "Righe anagrafica: $LINES"
-            if [ "$LINES" -lt 18000 ]; then
-              echo "❌ Anagrafica incompleta: solo $LINES righe"
-              exit 1
-            fi
-            mv anagrafica_tmp.csv anagrafica_impianti_attivi.csv
+          # Scarica solo i primi 100 byte — basta per leggere "Estrazione del YYYY-MM-DD"
+          PRIMA_RIGA=$(curl -s --range 0-99 \
+            "https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv" \
+            | head -1)
+          echo "Prima riga trovata: $PRIMA_RIGA"
+          echo "PRIMA_RIGA=$PRIMA_RIGA" >> $GITHUB_ENV
+
+      - name: Controlla se i dati sono aggiornati
+        run: |
+          # Legge la data salvata nell'ultimo aggiornamento (se esiste)
+          if [ -f "prezzi-carburante/last_extraction.txt" ]; then
+            ULTIMA=$(cat prezzi-carburante/last_extraction.txt)
           else
-            echo "❌ Errore: file anagrafica non valido"
-            exit 1
+            ULTIMA=""
+          fi
+          echo "Ultima estrazione salvata: $ULTIMA"
+          echo "Nuova estrazione trovata: $PRIMA_RIGA"
+
+          if [ "$PRIMA_RIGA" = "$ULTIMA" ]; then
+            echo "Dati invariati, nessun aggiornamento necessario."
+            echo "AGGIORNA=false" >> $GITHUB_ENV
+          else
+            echo "Dati nuovi rilevati! Procedo con il download completo."
+            echo "AGGIORNA=true" >> $GITHUB_ENV
           fi
 
-      - name: Download prezzi
+      - name: Scarica i CSV completi (solo se ci sono dati nuovi)
+        if: env.AGGIORNA == 'true'
         run: |
-          curl -L --max-time 120 --retry 3 -o prezzi_tmp.csv \
-          https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv
-          if grep -q "|" prezzi_tmp.csv; then
-            LINES=$(wc -l < prezzi_tmp.csv)
-            echo "Righe prezzi: $LINES"
-            if [ "$LINES" -lt 74000 ]; then
-              echo "❌ Prezzi incompleti: solo $LINES righe"
-              exit 1
-            fi
-            mv prezzi_tmp.csv prezzo_alle_8.csv
-          else
-            echo "❌ Errore: file prezzi non valido"
-            exit 1
-          fi
+          curl -s "https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv" \
+            -o prezzi-carburante/prezzo_alle_8.csv
+          curl -s "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv" \
+            -o prezzi-carburante/anagrafica_impianti_attivi.csv
 
-      - name: Commit e push
+          # Salva la data di estrazione per il prossimo controllo
+          echo "$PRIMA_RIGA" > prezzi-carburante/last_extraction.txt
+          echo "CSV aggiornati e last_extraction.txt salvato."
+
+      - name: Commit e push (solo se ci sono dati nuovi)
+        if: env.AGGIORNA == 'true'
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add *.csv
-          git diff --cached --quiet || git commit -m "Aggiorna dati carburante"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add prezzi-carburante/prezzo_alle_8.csv \
+                  prezzi-carburante/anagrafica_impianti_attivi.csv \
+                  prezzi-carburante/last_extraction.txt
+          git commit -m "Aggiornamento dati: $PRIMA_RIGA"
           git push
