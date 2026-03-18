@@ -140,7 +140,20 @@ font-size:12px;
 .geo-row input[type=range] { width:100px; accent-color:#818cf8; }
 .geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 .dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
-@media(max-width:480px){ .card { grid-template-columns:1fr auto; } .rank { display:none; } }
+@media(max-width:480px){
+  .card { grid-template-columns:1fr auto; padding:.85rem 1rem; }
+  .rank { display:none; }
+  .cn { font-size:.95rem; }
+  .ca { font-size:.78rem; white-space:normal; overflow:visible; text-overflow:unset; }
+  .pm { font-size:2.1rem; }
+  .pu { font-size:.65rem; }
+  .cm { gap:.25rem; }
+  .tag { font-size:.6rem; padding:.12rem .4rem; }
+  .ml { font-size:.7rem; opacity:.8; }
+  .dist-tag { font-size:.68rem; }
+  .rline1 { font-size:1.1rem; }
+  .rline2 { font-size:13px; }
+}
 
 /* ── BANNER CARICAMENTO AUTOMATICO ── */
 #auto-loading {
@@ -167,6 +180,33 @@ font-size:12px;
 .loading-sub {
   font-size:.78rem; color:#6b7280; text-align:center; line-height:1.6;
 }
+
+/* ── MODALE ALTRI CARBURANTI ── */
+#modal-carb {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.7); align-items:center; justify-content:center;
+}
+#modal-carb.open { display:flex; }
+.modal-box {
+  background:#13151c; border:1px solid rgba(245,158,11,.25);
+  border-radius:8px; padding:1.6rem; max-width:380px; width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+}
+.modal-title {
+  font-family:'Bebas Neue',sans-serif; font-size:1.2rem;
+  color:#f59e0b; letter-spacing:.08em; margin-bottom:.3rem;
+}
+.modal-sub {
+  font-size:.75rem; color:#6b7280; margin-bottom:1.1rem;
+}
+.modal-chips { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.2rem; }
+.modal-close {
+  background:none; border:1px solid rgba(255,255,255,.1);
+  color:#6b7280; padding:.4rem 1rem; font-size:.75rem;
+  border-radius:3px; cursor:pointer; transition:all .2s;
+}
+.modal-close:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
+.chip-alt { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#d97706; }
 </style>
 </head>
 <body>
@@ -248,6 +288,16 @@ font-size:12px;
   <div class="results-wrap">
     <div id="results"></div>
     <button class="btn-back" onclick="goBack()">↩ Carica nuovi file</button>
+  </div>
+</div>
+
+<!-- MODALE ALTRI CARBURANTI -->
+<div id="modal-carb">
+  <div class="modal-box">
+    <div class="modal-title">🔍 Cerca altro carburante</div>
+    <div class="modal-sub">Seleziona il tipo di carburante del tuo veicolo</div>
+    <div class="modal-chips" id="modal-chips"></div>
+    <button class="modal-close" onclick="closeModal()">✕ Chiudi</button>
   </div>
 </div>
 
@@ -394,10 +444,24 @@ function buildResults(){
   const sp=document.getElementById("sel-prov");
   sp.innerHTML='<option value="">Seleziona...</option>'+PROV.map(p=>`<option value="${p}">${p}</option>`).join("");
 
-  // Carburanti chips
-  selCarb=CARB.includes("Benzina")?"Benzina":CARB[0]||"";
-  document.getElementById("chips").innerHTML=CARB.map(c=>
+  // Carburanti chips — mostro solo i principali
+  const MAIN_CARB = ["Benzina","Gasolio","GPL"];
+  selCarb = CARB.find(c => MAIN_CARB.includes(c)) || CARB[0] || "";
+  const altriCarb = CARB.filter(c => !MAIN_CARB.includes(c));
+  const mainPresenti = CARB.filter(c => MAIN_CARB.includes(c));
+
+  let chipsHtml = mainPresenti.map(c =>
     `<button class="chip${selCarb===c?" on":""}" onclick="setCarb('${c.replace(/'/g,"\\'")}',this)">${LABELS[c]||c}</button>`
+  ).join("");
+
+  if(altriCarb.length){
+    chipsHtml += `<button class="chip chip-alt" id="chip-altro" onclick="openModal()">🔍 Altro...</button>`;
+  }
+  document.getElementById("chips").innerHTML = chipsHtml;
+
+  // Popola la modale con gli altri carburanti
+  document.getElementById("modal-chips").innerHTML = altriCarb.map(c =>
+    `<button class="chip" onclick="selDaModal('${c.replace(/'/g,"\\'")}',this)">${LABELS[c]||c}</button>`
   ).join("");
 
   updateResults();
@@ -434,7 +498,15 @@ function pickCom(c){
   document.getElementById("sugg").style.display="none";
   updateResults();
 }
-function setCarb(c,el){ selCarb=c; document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on")); el.classList.add("on"); updateResults(); }
+function setCarb(c,el){
+  selCarb=c;
+  document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on"));
+  // Ripristina etichetta pulsante "Altro" se era stato usato
+  const altroChip=document.getElementById("chip-altro");
+  if(altroChip) altroChip.textContent="🔍 Altro...";
+  el.classList.add("on");
+  updateResults();
+}
 function setMode(m,el){ selMode=m; document.querySelectorAll(".modes button").forEach(e=>e.classList.remove("on")); el.classList.add("on"); updateResults(); }
 
 // ── GEOLOCALIZZAZIONE ─────────────────────────────────────────────────────────
@@ -561,32 +633,35 @@ return;
       const delta=(prevP!=null&&price>0)?+(price-prevP).toFixed(4):null;
       return{...r,...(IMP[id]||{}),price,self2:r["isSelf"]==="1",prevP,delta};
     })
-    .filter(r=>r.price>0).sort((a,b)=>a.price-b.price).slice(0,5);
+    .filter(r=>r.price>0).sort((a,b)=>a.price-b.price);
 
-  if(!rows.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
+  const totalRows = rows.length;
+  const rows5 = rows.slice(0,5);
 
-const minPrice = rows[0].price.toFixed(3);
-const risparmio = rows.length > 1
-  ? (rows[rows.length-1].price - rows[0].price).toFixed(3)
+  if(!rows5.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
+
+const minPrice = rows5[0].price.toFixed(3);
+const risparmio = rows5.length > 1
+  ? (rows5[rows5.length-1].price - rows5[0].price).toFixed(3)
   : "0.000";
 
 // ultima data comunicata dai distributori
-const lastUpdate = rows
+const lastUpdate = rows5
   .map(r => r["dtComu"]?.slice(0,16))
   .filter(Boolean)
   .sort()
   .reverse()[0] || "";
 
 // conteggio variazioni prezzo
-const up = rows.filter(r => r.delta > 0).length;
-const down = rows.filter(r => r.delta < 0).length;
+const up = rows5.filter(r => r.delta > 0).length;
+const down = rows5.filter(r => r.delta < 0).length;
 
 area.innerHTML=`
 <div class="rtitle">
 
   <div class="rline1">
     ${selCarb.toUpperCase()} – ${selCom}
-    <span class="rtop">TOP ${rows.length}</span>
+    <span class="rtop">TOP ${rows5.length} su ${totalRows}</span>
   </div>
 
   <div class="rline2">
@@ -600,7 +675,7 @@ area.innerHTML=`
 </div>
 
 <div class="cards">
-${rows.map((r,i)=>card(r,i,false)).join("")}
+${rows5.map((r,i)=>card(r,i,false)).join("")}
 </div>
 `;
 }
@@ -637,6 +712,32 @@ function card(r,i,showDist){
     </div>
   </div>`;
 }
+
+function openModal(){
+  document.getElementById("modal-carb").classList.add("open");
+}
+function closeModal(){
+  document.getElementById("modal-carb").classList.remove("open");
+}
+function selDaModal(c, el){
+  closeModal();
+  // Aggiorna chip principale "Altro" per mostrare cosa è selezionato
+  document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on"));
+  const altroChip = document.getElementById("chip-altro");
+  if(altroChip){
+    altroChip.textContent = `🔍 ${c}`;
+    altroChip.classList.add("on");
+  }
+  selCarb = c;
+  // Aggiorna selezione nella modale
+  document.querySelectorAll("#modal-chips .chip").forEach(e=>e.classList.remove("on"));
+  el.classList.add("on");
+  updateResults();
+}
+// Chiudi modale cliccando fuori
+document.getElementById("modal-carb").addEventListener("click", function(e){
+  if(e.target===this) closeModal();
+});
 
 function goBack(){
   document.getElementById("screen-results").style.display="none";
