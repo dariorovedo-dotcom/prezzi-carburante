@@ -38,8 +38,8 @@ jobs:
       - name: Controlla se i dati sono aggiornati
         run: |
           # Legge la data salvata nell'ultimo aggiornamento (se esiste)
-          if [ -f "prezzi-carburante/last_extraction.txt" ]; then
-            ULTIMA=$(cat prezzi-carburante/last_extraction.txt)
+          if [ -f "last_extraction.txt" ]; then
+            ULTIMA=$(cat last_extraction.txt)
           else
             ULTIMA=""
           fi
@@ -57,22 +57,20 @@ jobs:
       - name: Scarica i CSV completi (solo se ci sono dati nuovi)
         if: env.AGGIORNA == 'true'
         run: |
-          mkdir -p prezzi-carburante
-
           curl -f -s --globoff \
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
-            -o prezzi-carburante/prezzo_alle_8.csv || \
+            -o prezzo_alle_8.csv || \
             { echo "❌ Errore download prezzo_alle_8.csv"; exit 1; }
 
           curl -f -s --globoff \
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv" \
-            -o prezzi-carburante/anagrafica_impianti_attivi.csv || \
+            -o anagrafica_impianti_attivi.csv || \
             { echo "❌ Errore download anagrafica"; exit 1; }
 
           # Salva la data di estrazione per il prossimo controllo
-          echo "$PRIMA_RIGA" > prezzi-carburante/last_extraction.txt
+          echo "$PRIMA_RIGA" > last_extraction.txt
           echo "✅ CSV aggiornati e last_extraction.txt salvato."
 
       - name: Commit e push (solo se ci sono dati nuovi)
@@ -80,8 +78,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add prezzi-carburante/prezzo_alle_8.csv \
-                  prezzi-carburante/anagrafica_impianti_attivi.csv \
-                  prezzi-carburante/last_extraction.txt
+          git add prezzo_alle_8.csv \
+                  anagrafica_impianti_attivi.csv \
+                  last_extraction.txt
           git commit -m "Aggiornamento dati: $PRIMA_RIGA"
           git push
