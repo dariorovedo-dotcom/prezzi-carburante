@@ -2,8 +2,6 @@ name: Aggiorna i dati
 
 on:
   schedule:
-    # Ogni ora dalle 6:00 alle 16:00 UTC = 8:00-18:00 ora italiana (ora legale UTC+2)
-    # In inverno (UTC+1) corrisponde alle 7:00-17:00 italiane — comunque adeguato
     - cron: '0 6 * * *'
     - cron: '0 7 * * *'
     - cron: '0 8 * * *'
@@ -15,7 +13,7 @@ on:
     - cron: '0 14 * * *'
     - cron: '0 15 * * *'
     - cron: '0 16 * * *'
-  workflow_dispatch:  # permette anche l'avvio manuale
+  workflow_dispatch:
 
 jobs:
   controlla-e-aggiorna:
@@ -27,7 +25,6 @@ jobs:
 
       - name: Scarica solo la prima riga del CSV prezzi
         run: |
-          # Scarica il file completo e legge solo la prima riga
           PRIMA_RIGA=$(curl -s --globoff \
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
@@ -37,7 +34,6 @@ jobs:
 
       - name: Controlla se i dati sono aggiornati
         run: |
-          # Legge la data salvata nell'ultimo aggiornamento (se esiste)
           if [ -f "last_extraction.txt" ]; then
             ULTIMA=$(cat last_extraction.txt)
           else
@@ -47,7 +43,7 @@ jobs:
           echo "Nuova estrazione trovata: $PRIMA_RIGA"
 
           if [ -z "$PRIMA_RIGA" ]; then
-            echo "Prima riga vuota (server non supporta range), forzo il download."
+            echo "Prima riga vuota, forzo il download."
             echo "AGGIORNA=true" >> $GITHUB_ENV
           elif [ "$PRIMA_RIGA" = "$ULTIMA" ]; then
             echo "Dati invariati, nessun aggiornamento necessario."
@@ -64,28 +60,25 @@ jobs:
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
             -o prezzo_alle_8.csv || \
-            { echo "❌ Errore download prezzo_alle_8.csv"; exit 1; }
+            { echo "Errore download prezzo_alle_8.csv"; exit 1; }
 
           curl -f -s --globoff \
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv" \
             -o anagrafica_impianti_attivi.csv || \
-            { echo "❌ Errore download anagrafica"; exit 1; }
+            { echo "Errore download anagrafica"; exit 1; }
 
-          # Salva la data di estrazione per il prossimo controllo
           echo "$PRIMA_RIGA" > last_extraction.txt
-          echo "✅ CSV aggiornati e last_extraction.txt salvato."
+          echo "CSV aggiornati e last_extraction.txt salvato."
 
-                - name: Commit e push (solo se ci sono modifiche)
+      - name: Commit e push (solo se ci sono modifiche)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git add .
-
           if git diff --cached --quiet; then
-            echo "Nessuna modifica, niente commit"
+            echo "Nessuna modifica, niente commit."
           else
-            git commit -m "Aggiornamento dati"
+            git commit -m "Aggiornamento dati: $PRIMA_RIGA"
             git push
           fi
