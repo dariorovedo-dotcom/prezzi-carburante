@@ -76,7 +76,7 @@ jobs:
           echo "$PRIMA_RIGA" > last_extraction.txt
           echo "✅ CSV aggiornati e last_extraction.txt salvato."
 
-       - name: Commit e push (solo se ci sono modifiche)
+                - name: Commit e push (solo se ci sono modifiche)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
