@@ -67,38 +67,11 @@ input:disabled { opacity:.35; cursor:not-allowed; }
 .modes button.on { background:rgba(245,158,11,.15); color:#f59e0b; }
 .divider { height:1px; background:rgba(255,255,255,.06); margin:0 2rem; }
 .results-wrap { padding:1rem 2rem 3rem; }
-.rtitle{
-display:flex;
-flex-direction:column;
-gap:6px;
-margin-bottom:14px;
-padding-bottom:6px;
-border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-.rline1{
-font-family:'Bebas Neue',sans-serif;
-font-size:1.25rem;
-letter-spacing:.08em;
-color:#9ca3af;
-}
-
-.rline2{
-font-size:14px;
-color:#e5e7eb;
-}
-
-.rtop{
-color:#fcd34d;
-margin-left:10px;
-font-weight:700;
-}
-
-.rsave{
-color:#86efac;
-margin-left:10px;
-font-size:12px;
-}
+.rtitle{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.06); }
+.rline1{ font-family:'Bebas Neue',sans-serif; font-size:1.25rem; letter-spacing:.08em; color:#9ca3af; }
+.rline2{ font-size:14px; color:#e5e7eb; }
+.rtop{ color:#fcd34d; margin-left:10px; font-weight:700; }
+.rsave{ color:#86efac; margin-left:10px; font-size:12px; }
 .rtitle span { font-family:'DM Sans',sans-serif; font-size:.7rem; color:#4b5563; text-transform:uppercase; letter-spacing:.08em; }
 .cards { display:flex; flex-direction:column; gap:.6rem; }
 .card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:4px; padding:1rem 1.2rem; display:grid; grid-template-columns:1.8rem 1fr auto; gap:.9rem; align-items:center; animation:up .25s ease both; }
@@ -140,239 +113,97 @@ font-size:12px;
 .geo-row input[type=range] { width:100px; accent-color:#818cf8; }
 .geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 .dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
-@media(max-width:480px){
-  .card { grid-template-columns:1fr auto; padding:.85rem 1rem; }
-  .rank { display:none; }
-  .cn { font-size:.95rem; }
-  .ca { font-size:.78rem; white-space:normal; overflow:visible; text-overflow:unset; }
-  .pm { font-size:2.1rem; }
-  .pu { font-size:.65rem; }
-  .cm { gap:.25rem; }
-  .tag { font-size:.6rem; padding:.12rem .4rem; }
-  .ml { font-size:.7rem; opacity:.8; }
-  .dist-tag { font-size:.68rem; }
-  .rline1 { font-size:1.1rem; }
-  .rline2 { font-size:13px; }
-}
 
 /* ── BANNER CARICAMENTO AUTOMATICO ── */
-#auto-loading {
-  position:fixed; inset:0; z-index:999;
-  background:rgba(10,12,16,.92);
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:1rem;
-}
+#auto-loading { position:fixed; inset:0; z-index:999; background:rgba(10,12,16,.95); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
 #auto-loading.hidden { display:none; }
-.loading-spinner {
-  width:36px; height:36px;
-  border:3px solid rgba(245,158,11,.2);
-  border-top-color:#f59e0b;
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-}
+.loading-spinner { width:36px; height:36px; border:3px solid rgba(245,158,11,.2); border-top-color:#f59e0b; border-radius:50%; animation:spin .8s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-.loading-msg {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.3rem; letter-spacing:.1em;
-  color:#f59e0b;
-}
-.loading-sub {
-  font-size:.78rem; color:#6b7280; text-align:center; line-height:1.6;
-}
+.loading-msg { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:.1em; color:#f59e0b; }
+.loading-sub { font-size:.78rem; color:#6b7280; text-align:center; line-height:1.6; }
 
 /* ── MODALE ALTRI CARBURANTI ── */
-#modal-carb {
-  display:none; position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,.7); align-items:center; justify-content:center;
-}
+#modal-carb { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); align-items:center; justify-content:center; }
 #modal-carb.open { display:flex; }
-.modal-box {
-  background:#13151c; border:1px solid rgba(245,158,11,.25);
-  border-radius:8px; padding:1.6rem; max-width:380px; width:90%;
-  box-shadow:0 20px 60px rgba(0,0,0,.7);
-}
-.modal-title {
-  font-family:'Bebas Neue',sans-serif; font-size:1.2rem;
-  color:#f59e0b; letter-spacing:.08em; margin-bottom:.3rem;
-}
-.modal-sub {
-  font-size:.75rem; color:#6b7280; margin-bottom:1.1rem;
-}
+.modal-box { background:#13151c; border:1px solid rgba(245,158,11,.25); border-radius:8px; padding:1.6rem; max-width:380px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.7); }
+.modal-title { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:#f59e0b; letter-spacing:.08em; margin-bottom:.3rem; }
+.modal-sub { font-size:.75rem; color:#6b7280; margin-bottom:1.1rem; }
 .modal-chips { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.2rem; }
-.modal-close {
-  background:none; border:1px solid rgba(255,255,255,.1);
-  color:#6b7280; padding:.4rem 1rem; font-size:.75rem;
-  border-radius:3px; cursor:pointer; transition:all .2s;
-}
+.modal-close { background:none; border:1px solid rgba(255,255,255,.1); color:#6b7280; padding:.4rem 1rem; font-size:.75rem; border-radius:3px; cursor:pointer; transition:all .2s; }
 .modal-close:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
-.chip-alt { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#d97706; }
-
-/* ── MEDIA NAZIONALE ── */
-.avg-banner {
-  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15);
-  border-radius:4px; padding:.45rem 1rem; margin-bottom:.8rem;
-  font-size:.75rem; color:#818cf8; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
-}
+.avg-banner { background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15); border-radius:4px; padding:.45rem 1rem; margin-bottom:.8rem; font-size:.75rem; color:#818cf8; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
 .avg-banner b { color:#a5b4fc; }
-.tag-avg { background:rgba(99,102,241,.15); color:#818cf8; border:1px solid rgba(99,102,241,.25); font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; padding:.1rem .38rem; border-radius:2px; font-weight:700; }
 </style>
 </head>
 <body>
 
-<!-- BANNER CARICAMENTO AUTOMATICO -->
 <div id="auto-loading">
   <div class="loading-spinner"></div>
-  <div class="loading-msg">Un attimo di pazienza</div>
-  <div class="loading-sub">Sto caricando i dati in automatico…</div>
+  <div class="loading-msg">Sincronizzazione dati</div>
+  <div class="loading-sub">Recupero tabelle ufficiali...</div>
 </div>
 
 <div class="header">
   <div class="title">PREZZI<br>CARBURANTE</div>
-  <div class="subtitle">Dati ufficiali Ministero Imprese e Made in Italy<br>Aggiornati ogni mattina alle 8:00</div>
+  <div class="subtitle">Dati ufficiali MIMIT<br>Aggiornati in tempo reale dal repository</div>
 </div>
 
-<!-- SCHERMATA CARICAMENTO -->
 <div id="screen-load">
-
   <div class="how">
-    <div><span class="step-num">1</span> Vai su <a href="https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" target="_blank">mimit.gov.it → Open Data → Carburanti ↗</a></div>
+    <div><span class="step-num">1</span> Vai su <a href="https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" target="_blank">mimit.gov.it ↗</a></div>
     <div><span class="step-num">2</span> Scarica <b>anagrafica_impianti_attivi.csv</b> e <b>prezzo_alle_8.csv</b></div>
-    <div><span class="step-num">3</span> Seleziona <b>entrambi i file insieme</b> qui sotto</div>
+    <div><span class="step-num">3</span> Trascinali insieme qui sotto (se l'auto-load fallisce)</div>
   </div>
-
   <div class="drop-big" id="drop" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
     <input type="file" accept=".csv" multiple id="file-input" onchange="onFiles(this.files)">
     <div class="drop-icon" id="drop-icon">📂</div>
-    <div class="drop-msg" id="drop-msg">Clicca qui o trascina i 2 file CSV</div>
-    <div class="drop-sub" id="drop-sub">anagrafica_impianti_attivi.csv + prezzo_alle_8.csv</div>
+    <div class="drop-msg">Trascina i 2 file CSV</div>
     <div class="file-tags" id="file-tags"></div>
   </div>
-
   <div class="err-msg" id="err-msg"></div>
   <button class="btn-go" id="btn-go" onclick="elabora()">AVVIA →</button>
-
 </div>
 
-<!-- SCHERMATA RISULTATI -->
 <div id="screen-results">
   <div class="status-bar"><div class="dot"></div><span id="status-txt"></span></div>
   <div id="delta-box"></div>
   <div class="search">
-    <div>
-      <button class="btn-geo" id="btn-geo" onclick="toggleGeo()">📍 Trovami i distributori più vicini</button>
-      <div class="geo-row" id="geo-row">
-        <span>Raggio:</span>
-        <input type="range" id="geo-km" min="1" max="30" value="5" oninput="onGeoKm(this.value)">
-        <span id="geo-km-lbl">5 km</span>
-        <button class="geo-clear" onclick="clearGeo()">✕ Disattiva</button>
-      </div>
+    <button class="btn-geo" id="btn-geo" onclick="toggleGeo()">📍 Distributori più vicini</button>
+    <div class="geo-row" id="geo-row">
+      <span>Raggio:</span>
+      <input type="range" id="geo-km" min="1" max="30" value="5" oninput="onGeoKm(this.value)">
+      <span id="geo-km-lbl">5 km</span>
+      <button class="geo-clear" onclick="clearGeo()">✕ Disattiva</button>
     </div>
     <div class="row2">
-      <div class="fg">
-        <label class="fl">Provincia</label>
-        <select id="sel-prov" onchange="onProv()"><option value="">Seleziona...</option></select>
-      </div>
-      <div class="fg">
-        <label class="fl">Comune</label>
-        <input type="text" id="inp-com" disabled placeholder="Prima seleziona provincia"
-          oninput="onCom()" onfocus="showSugg()" onblur="hideSugg()">
-        <div class="sugg" id="sugg" style="display:none"></div>
-      </div>
+      <div class="fg"><label class="fl">Provincia</label><select id="sel-prov" onchange="onProv()"></select></div>
+      <div class="fg"><label class="fl">Comune</label><input type="text" id="inp-com" disabled oninput="onCom()" onfocus="showSugg()" onblur="hideSugg()"><div class="sugg" id="sugg" style="display:none"></div></div>
     </div>
-    <div class="fg">
-      <label class="fl">Carburante</label>
-      <div class="chips" id="chips"></div>
-    </div>
-    <div class="fg">
-      <label class="fl">Modalità</label>
-      <div class="modes">
-        <button class="on" onclick="setMode('all',this)">Tutti</button>
-        <button onclick="setMode('self',this)">Self Service</button>
-        <button onclick="setMode('servito',this)">Servito</button>
-      </div>
-    </div>
+    <div class="fg"><label class="fl">Carburante</label><div class="chips" id="chips"></div></div>
+    <div class="fg"><label class="fl">Modalità</label><div class="modes"><button class="on" onclick="setMode('all',this)">Tutti</button><button onclick="setMode('self',this)">Self</button><button onclick="setMode('servito',this)">Servito</button></div></div>
   </div>
   <div class="divider"></div>
-  <div class="results-wrap">
-    <div id="results"></div>
-    <button class="btn-back" onclick="goBack()">↩ Carica nuovi file</button>
-  </div>
+  <div class="results-wrap"><div id="results"></div><button class="btn-back" onclick="goBack()">↩ Carica manuale</button></div>
 </div>
 
-<!-- MODALE ALTRI CARBURANTI -->
-<div id="modal-carb">
-  <div class="modal-box">
-    <div class="modal-title">🔍 Cerca altro carburante</div>
-    <div class="modal-sub">Seleziona il tipo di carburante del tuo veicolo</div>
-    <div class="modal-chips" id="modal-chips"></div>
-    <button class="modal-close" onclick="closeModal()">✕ Chiudi</button>
-  </div>
-</div>
+<div id="modal-carb"><div class="modal-box"><div class="modal-title">Cerca altro</div><div class="modal-chips" id="modal-chips"></div><button class="modal-close" onclick="closeModal()">Chiudi</button></div></div>
 
 <script>
-// ── STATO ─────────────────────────────────────────────────────────────────────
 let IMP={}, PRZ=[], PROV=[], COM_MAP={}, CARB=[];
 let PREV={}, SNAP_DATE="", HAS_DELTA=false;
-let impText="", przText="";
-let selProv="", selCom="", selComTxt="", selCarb="", selMode="all";
+let impText="", przText="", selProv="", selCom="", selComTxt="", selCarb="", selMode="all";
 const SNAP_KEY="carb_snap_v2";
-const LABELS={"Benzina":"⛽ Benzina","Gasolio":"🛢️ Gasolio","GPL":"🔵 GPL","Metano":"💨 Metano","Benzina Super":"⭐ Super","HVO":"🌿 HVO"};
+const LABELS={"Benzina":"⛽ Benzina","Gasolio":"🛢️ Gasolio","GPL":"🔵 GPL","Metano":"💨 Metano"};
 
-// ── LEGGI FILE ────────────────────────────────────────────────────────────────
-function readAsText(file){
-  return new Promise(res=>{
-    const r=new FileReader();
-    r.onload=e=>{
-      const bytes=new Uint8Array(e.target.result);
-      let text;
-      try { text=new TextDecoder("utf-8",{fatal:true}).decode(bytes); }
-      catch { text=new TextDecoder("windows-1252").decode(bytes); }
-      res(text);
-    };
-    r.readAsArrayBuffer(file);
-  });
-}
-
-function onDragOver(e){ e.preventDefault(); document.getElementById("drop").classList.add("over"); }
-function onDragLeave(){ document.getElementById("drop").classList.remove("over"); }
-function onDrop(e){ e.preventDefault(); document.getElementById("drop").classList.remove("over"); onFiles(e.dataTransfer.files); }
-
-async function onFiles(files){
-  const list=[...files].filter(f=>f.name.endsWith(".csv"));
-  if(!list.length) return;
-  for(const f of list){
-    const text=await readAsText(f);
-    if(f.name.toLowerCase().includes("impianti") || f.name.toLowerCase().includes("anagrafica")) impText=text;
-    else if(f.name.toLowerCase().includes("prezzo") || f.name.toLowerCase().includes("alle_8")) przText=text;
-    else {
-      // fallback: assegna in ordine
-      if(!impText) impText=text; else przText=text;
-    }
-  }
-  // Aggiorna UI
-  const tags=document.getElementById("file-tags");
-  tags.innerHTML=[...list].map(f=>`<span class="file-tag">✓ ${f.name}</span>`).join("");
-  const ready=impText&&przText;
-  document.getElementById("drop").classList.toggle("ok",!!ready);
-  document.getElementById("drop-icon").textContent=ready?"✅":"📂";
-  document.getElementById("drop-msg").textContent=ready?"2 file caricati — clicca AVVIA":"1 file caricato — aggiungi l'altro";
-  document.getElementById("btn-go").classList.toggle("on",!!ready);
-  document.getElementById("err-msg").style.display="none";
-}
-
-// ── CSV PARSER ────────────────────────────────────────────────────────────────
 function parseCSV(text){
-  let lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim().split("\n");
-  // Salta righe prima dell'header reale (es. "Estrazione del...")
-  while(lines.length && !lines[0].includes("|") && !lines[0].includes(";")) lines.shift();
+  let lines=text.replace(/\r\n/g,"\n").split("\n");
+  while(lines.length && !lines[0].includes("|")) lines.shift();
   if(lines.length<2) return [];
-  const sep=lines[0].includes("|")?"|":";";
-  const hdr=lines[0].split(sep).map(h=>h.trim().replace(/"/g,""));
+  const hdr=lines[0].split("|").map(h=>h.trim().replace(/"/g,""));
   const rows=[];
   for(let i=1;i<lines.length;i++){
     if(!lines[i].trim()) continue;
-    const v=lines[i].split(sep).map(s=>s.trim().replace(/"/g,""));
+    const v=lines[i].split("|").map(s=>s.trim().replace(/"/g,""));
     const r={}; hdr.forEach((h,j)=>r[h]=v[j]??""); rows.push(r);
   }
   return rows;
@@ -381,449 +212,84 @@ function parseCSV(text){
 function N(s){ return (s||"").toUpperCase().trim(); }
 function pk(id,c,s){ return id+"|"+N(c)+"|"+s; }
 
-// ── ELABORA ───────────────────────────────────────────────────────────────────
 function elabora(){
   try {
-  if(!impText||!przText){
-    const e=document.getElementById("err-msg");
-    e.textContent="Carica entrambi i file CSV prima di continuare.";
-    e.style.display="block"; return;
-  }
-
-  // Impianti
-  const impRows=parseCSV(impText);
-  console.log("impRows:", impRows.length);
-  if(!impRows.length){ showErr("Il file impianti non sembra valido. Riprova."); return; }
-  IMP={}; const provSet=new Set(); COM_MAP={};
-  for(const r of impRows){
-    const id=r["idImpianto"]||r["id_impianto"]||"";
-    if(id) IMP[id]=r;
-    const p=N(r["Provincia"]),c=N(r["Comune"]);
-    if(p){ provSet.add(p); if(!COM_MAP[p])COM_MAP[p]=new Set(); if(c)COM_MAP[p].add(c); }
-  }
-  PROV=[...provSet].sort();
-  for(const p of PROV) COM_MAP[p]=[...COM_MAP[p]].sort();
-
-  // Prezzi
-  PRZ=parseCSV(przText);
-  if(!PRZ.length){ showErr("Il file prezzi non sembra valido. Riprova."); return; }
-  CARB=[...new Set(PRZ.map(r=>r["descCarburante"]).filter(Boolean))].sort();
-
-  // Snapshot delta
-  const today=new Date().toISOString().slice(0,10);
-  const todayMap={};
-  for(const r of PRZ){
-    const id=r["idImpianto"]||r["id_impianto"]||"";
-    const p=parseFloat((r["prezzo"]||"0").replace(",","."));
-    if(id&&r["descCarburante"]&&p>0) todayMap[pk(id,r["descCarburante"],r["isSelf"])]=p;
-  }
-  let snap=null;
-  try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch{}
-  if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
-  else { PREV={}; HAS_DELTA=false; }
-  try { if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap})); } catch(e) { console.log("localStorage pieno"); }
-
-  buildResults();
-  } catch(err) {
-    console.error("ERRORE in elabora():", err);
-    alert("Errore elaborazione: " + err.message);
-    document.getElementById("auto-loading").classList.add("hidden");
-  }
+    const impRows=parseCSV(impText);
+    if(!impRows.length) return;
+    IMP={}; const provSet=new Set();
+    for(const r of impRows){
+      const id=r["idImpianto"]; if(id) IMP[id]=r;
+      const p=N(r["Provincia"]), c=N(r["Comune"]);
+      if(p){ provSet.add(p); if(!COM_MAP[p])COM_MAP[p]=new Set(); if(c)COM_MAP[p].add(c); }
+    }
+    PROV=[...provSet].sort();
+    for(const p of PROV) COM_MAP[p]=[...COM_MAP[p]].sort();
+    PRZ=parseCSV(przText);
+    CARB=[...new Set(PRZ.map(r=>r["descCarburante"]).filter(Boolean))].sort();
+    buildResults();
+  } catch(e){ alert("Errore dati: "+e.message); }
 }
 
-function showErr(msg){
-  const e=document.getElementById("err-msg");
-  e.textContent=msg; e.style.display="block";
-}
-
-// ── RISULTATI UI ──────────────────────────────────────────────────────────────
 function buildResults(){
   document.getElementById("screen-load").style.display="none";
   document.getElementById("screen-results").style.display="block";
-
-  document.getElementById("status-txt").textContent=
-    Object.keys(IMP).length.toLocaleString("it-IT")+" impianti • "+
-    PRZ.length.toLocaleString("it-IT")+" prezzi"+
-    (HAS_DELTA?" • Confronto con "+SNAP_DATE:"");
-
-  const db=document.getElementById("delta-box");
-  db.innerHTML=HAS_DELTA
-    ?`<div class="delta-bar">
-        <b style="color:#4b5563;font-size:.63rem;text-transform:uppercase;letter-spacing:.08em">vs ${SNAP_DATE}:</b>
-        <span style="display:flex;align-items:center;gap:.3rem"><span style="color:#4ade80">▼</span>sceso</span>
-        <span style="display:flex;align-items:center;gap:.3rem"><span style="color:#f87171">▲</span>salito</span>
-        <span style="color:#6b7280">= stabile</span>
-      </div>`
-    :`<div class="no-delta">ℹ️ Prima esecuzione: le variazioni ▲▼ saranno visibili dal prossimo utilizzo.</div>`;
-
-  // Province
+  document.getElementById("status-txt").textContent=Object.keys(IMP).length+" impianti caricati correttamente.";
   const sp=document.getElementById("sel-prov");
   sp.innerHTML='<option value="">Seleziona...</option>'+PROV.map(p=>`<option value="${p}">${p}</option>`).join("");
-
-  // Carburanti chips — mostro solo i principali
-  const MAIN_CARB = ["Benzina","Gasolio","GPL"];
-  selCarb = CARB.find(c => MAIN_CARB.includes(c)) || CARB[0] || "";
-  const altriCarb = CARB.filter(c => !MAIN_CARB.includes(c));
-  const mainPresenti = CARB.filter(c => MAIN_CARB.includes(c));
-
-  let chipsHtml = mainPresenti.map(c =>
-    `<button class="chip${selCarb===c?" on":""}" onclick="setCarb('${c.replace(/'/g,"\\'")}',this)">${LABELS[c]||c}</button>`
-  ).join("");
-
-  if(altriCarb.length){
-    chipsHtml += `<button class="chip chip-alt" id="chip-altro" onclick="openModal()">🔍 Altro...</button>`;
-  }
-  document.getElementById("chips").innerHTML = chipsHtml;
-
-  // Popola la modale con gli altri carburanti
-  document.getElementById("modal-chips").innerHTML = altriCarb.map(c =>
-    `<button class="chip" onclick="selDaModal('${c.replace(/'/g,"\\'")}',this)">${LABELS[c]||c}</button>`
-  ).join("");
-
+  const MAIN=["Benzina","Gasolio","GPL"];
+  selCarb=CARB.find(c=>MAIN.includes(c))||CARB[0];
+  document.getElementById("chips").innerHTML=CARB.filter(c=>MAIN.includes(c)).map(c=>`<button class="chip ${selCarb===c?'on':''}" onclick="setCarb('${c}',this)">${LABELS[c]||c}</button>`).join("");
   updateResults();
 }
 
-// ── FILTRI ────────────────────────────────────────────────────────────────────
-function onProv(){
-  selProv=document.getElementById("sel-prov").value;
-  selCom=""; selComTxt="";
-  const inp=document.getElementById("inp-com");
-  inp.value=""; inp.disabled=!selProv;
-  inp.placeholder=selProv?"Scrivi comune...":"Prima seleziona provincia";
-  document.getElementById("sugg").style.display="none";
-  updateResults();
-}
-function onCom(){
-  selComTxt=document.getElementById("inp-com").value;
-  const up=N(selComTxt);
-  selCom=(COM_MAP[selProv]||[]).find(c=>N(c)===up)||"";
-  renderSugg(); updateResults();
-}
+function onProv(){ selProv=document.getElementById("sel-prov").value; const inp=document.getElementById("inp-com"); inp.disabled=!selProv; inp.value=""; updateResults(); }
+function onCom(){ selComTxt=document.getElementById("inp-com").value; selCom=(COM_MAP[selProv]||[]).find(c=>N(c)===N(selComTxt))||""; renderSugg(); updateResults(); }
 function showSugg(){ renderSugg(); }
 function hideSugg(){ setTimeout(()=>document.getElementById("sugg").style.display="none",200); }
-function renderSugg(){
-  const box=document.getElementById("sugg");
-  const list=selComTxt&&!selCom?(COM_MAP[selProv]||[]).filter(c=>c.startsWith(N(selComTxt))).slice(0,8):[];
-  if(!list.length){box.style.display="none";return;}
-  box.innerHTML=list.map(c=>`<div onmousedown="pickCom('${c.replace(/'/g,"\\'")}')"> ${c}</div>`).join("");
-  box.style.display="block";
-}
-function pickCom(c){
-  selCom=c; selComTxt=c;
-  document.getElementById("inp-com").value=c;
-  document.getElementById("sugg").style.display="none";
-  updateResults();
-}
-function setCarb(c,el){
-  selCarb=c;
-  document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on"));
-  // Ripristina etichetta pulsante "Altro" se era stato usato
-  const altroChip=document.getElementById("chip-altro");
-  if(altroChip) altroChip.textContent="🔍 Altro...";
-  el.classList.add("on");
-  updateResults();
-}
-function setMode(m,el){ selMode=m; document.querySelectorAll(".modes button").forEach(e=>e.classList.remove("on")); el.classList.add("on"); updateResults(); }
+function renderSugg(){ const box=document.getElementById("sugg"); const list=selComTxt&&!selCom?(COM_MAP[selProv]||[]).filter(c=>c.startsWith(N(selComTxt))).slice(0,5):[]; if(!list.length){box.style.display="none";return;} box.innerHTML=list.map(c=>`<div onmousedown="pickCom('${c}')">${c}</div>`).join(""); box.style.display="block"; }
+function pickCom(c){ selCom=c; document.getElementById("inp-com").value=c; updateResults(); }
+function setCarb(c,el){ selCarb=c; document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on")); el.classList.add("on"); updateResults(); }
+function setMode(m,el){ selMode=m; document.querySelectorAll(".modes button").forEach(x=>x.classList.remove("on")); el.classList.add("on"); updateResults(); }
 
-// ── GEOLOCALIZZAZIONE ─────────────────────────────────────────────────────────
-let geoMode=false, userLat=null, userLon=null, geoKm=5;
-
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371, toR=Math.PI/180;
-  const dLat=(lat2-lat1)*toR, dLon=(lon2-lon1)*toR;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function toggleGeo(){
-  if(geoMode){ clearGeo(); return; }
-  if(!navigator.geolocation){ alert("Il tuo browser non supporta la geolocalizzazione."); return; }
-  const btn=document.getElementById("btn-geo");
-  btn.textContent="📍 Ricerca posizione..."; btn.disabled=true;
-  navigator.geolocation.getCurrentPosition(
-    pos=>{
-      userLat=pos.coords.latitude; userLon=pos.coords.longitude;
-      geoMode=true;
-      btn.textContent="📍 Vicino a te — attivo"; btn.classList.add("active"); btn.disabled=false;
-      document.getElementById("geo-row").classList.add("show");
-      updateResults();
-    },
-    ()=>{
-      btn.textContent="📍 Trovami i distributori più vicini"; btn.disabled=false;
-      alert("Impossibile ottenere la posizione. Controlla i permessi del browser.");
-    }
-  );
-}
-
-function clearGeo(){
-  geoMode=false; userLat=null; userLon=null;
-  const btn=document.getElementById("btn-geo");
-  btn.textContent="📍 Trovami i distributori più vicini"; btn.classList.remove("active");
-  document.getElementById("geo-row").classList.remove("show");
-  updateResults();
-}
-
-function onGeoKm(v){
-  geoKm=+v;
-  document.getElementById("geo-km-lbl").textContent=v+" km";
-  updateResults();
-}
 function updateResults(){
   const area=document.getElementById("results");
-
-  // MODALITÀ GEO
-  if(geoMode && userLat!==null){
-    if(!selCarb){ area.innerHTML=`<div class="empty">Seleziona il carburante</div>`; return; }
-    const geoRows=PRZ
-      .filter(r=>{
-        if(N(r["descCarburante"])!==N(selCarb)) return false;
-        if(selMode==="self"&&r["isSelf"]!=="1") return false;
-        if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-        const id=r["idImpianto"]||r["id_impianto"]||"";
-        const imp=IMP[id]; if(!imp) return false;
-        const la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
-        if(!la||!lo) return false;
-        return haversine(userLat,userLon,la,lo)<=geoKm;
-      })
-      .map(r=>{
-        const id=r["idImpianto"]||r["id_impianto"]||"";
-        const price=parseFloat((r["prezzo"]||"0").replace(",","."));
-        const prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])]??null;
-        const delta=(prevP!=null&&price>0)?+(price-prevP).toFixed(4):null;
-        const imp=IMP[id]||{};
-        const la=parseFloat(imp["Latitudine"]), lo=parseFloat(imp["Longitudine"]);
-        const dist=haversine(userLat,userLon,la,lo);
-        return{...r,...imp,price,self2:r["isSelf"]==="1",prevP,delta,dist};
-      })
-      .filter(r=>r.price>0).sort((a,b)=>a.price-b.price).slice(0,10);
-    if(!geoRows.length){
-      area.innerHTML=`<div class="empty">Nessun distributore nel raggio di ${geoKm} km.<br>Prova ad aumentare il raggio.</div>`;
-      return;
-    }
-    const minP=geoRows[0].price.toFixed(3);
-    const sav=geoRows.length>1?(geoRows[geoRows.length-1].price-geoRows[0].price).toFixed(3):"0.000";
-    area.innerHTML=`
-
-<div class="rtitle">
-
-  <div class="rline1">
-    ${selCarb.toUpperCase()} – entro ${geoKm} km
-    <span class="rtop">TOP ${geoRows.length}</span>
-  </div>
-
-  <div class="rline2">
-    PREZZO MINIMO: ${minP} €/L
-    <span class="rsave">RISPARMI ${sav} €/L</span>
-    <span style="color:#d1d5db;margin-left:10px;font-size:12px">
-      distributori nel raggio
-    </span>
-  </div>
-
-</div>
-
-<div class="cards">
-${geoRows.map((r,i)=>card(r,i,true)).join("")}
-</div>
-`;
-return;
-  }
-
-  // MODALITÀ NORMALE
-  if(!selCom||!selCarb){
-    area.innerHTML=`<div class="empty">${!selProv?"⬆ Seleziona una provincia":!selCom?"Scrivi il nome del comune":"Seleziona il carburante"}</div>`;
-    return;
-  }
+  if(!selCom||!selCarb){ area.innerHTML='<div class="empty">Seleziona provincia e comune per vedere i prezzi.</div>'; return; }
   const ids=new Set(Object.entries(IMP).filter(([,s])=>N(s["Provincia"])===selProv&&N(s["Comune"])===selCom).map(([id])=>id));
-  const rows=PRZ
-    .filter(r=>{
-      const id=r["idImpianto"]||r["id_impianto"]||"";
-      if(!ids.has(id)||N(r["descCarburante"])!==N(selCarb)) return false;
-      if(selMode==="self"&&r["isSelf"]!=="1") return false;
-      if(selMode==="servito"&&r["isSelf"]!=="0") return false;
-      return true;
-    })
-    .map(r=>{
-      const id=r["idImpianto"]||r["id_impianto"]||"";
-      const price=parseFloat((r["prezzo"]||"0").replace(",","."));
-      const prevP=PREV[pk(id,r["descCarburante"],r["isSelf"])]??null;
-      const delta=(prevP!=null&&price>0)?+(price-prevP).toFixed(4):null;
-      return{...r,...(IMP[id]||{}),price,self2:r["isSelf"]==="1",prevP,delta};
-    })
-    .filter(r=>r.price>0).sort((a,b)=>a.price-b.price);
-
-  const totalRows = rows.length;
-  const rows5 = rows.slice(0,5);
-
-  if(!rows5.length){ area.innerHTML=`<div class="empty">Nessun dato trovato.<br>Prova a cambiare modalità o carburante.</div>`; return; }
-
-const minPrice = rows5[0].price.toFixed(3);
-const risparmio = rows5.length > 1
-  ? (rows5[rows5.length-1].price - rows5[0].price).toFixed(3)
-  : "0.000";
-
-// ultima data comunicata dai distributori
-const lastUpdate = rows5
-  .map(r => r["dtComu"]?.slice(0,16))
-  .filter(Boolean)
-  .sort()
-  .reverse()[0] || "";
-
-// conteggio variazioni prezzo
-const up = rows5.filter(r => r.delta > 0).length;
-const down = rows5.filter(r => r.delta < 0).length;
-
-// media nazionale per il carburante selezionato
-const allNational = PRZ
-  .filter(r => N(r["descCarburante"])===N(selCarb))
-  .map(r => parseFloat((r["prezzo"]||"0").replace(",",".")))
-  .filter(p => p > 0.5 && p < 5);
-const avgNational = allNational.length
-  ? (allNational.reduce((a,b)=>a+b,0) / allNational.length).toFixed(3)
-  : null;
-
-area.innerHTML=`
-<div class="rtitle">
-
-  <div class="rline1">
-    ${selCarb.toUpperCase()} – ${selCom}
-    <span class="rtop">TOP ${rows5.length} su ${totalRows}</span>
-  </div>
-
-  <div class="rline2">
-    PREZZO MINIMO: ${minPrice} €/L
-    <span class="rsave">RISPARMI ${risparmio} €/L</span>
-    <span style="color:#d1d5db;margin-left:10px;font-size:12px">
-      agg. ${lastUpdate}
-    </span>
-  </div>
-
-</div>
-
-${avgNational ? `<div class="avg-banner">📊 Media nazionale ${selCarb}: <b>${avgNational} €/L</b> <span style="color:#6b7280;font-size:.7rem">(su ${allNational.length.toLocaleString("it-IT")} rilevazioni)</span></div>` : ""}
-
-<div class="cards">
-${rows5.map((r,i)=>card(r,i,false,avgNational?parseFloat(avgNational):null)).join("")}
-</div>
-`;
-}
-
-function card(r,i,showDist,avgNational=null){
-  const brand=r["Bandiera"]||r["gestoreImpianto"]||"";
-  const name=r["Nome Impianto"]||r["gestoreImpianto"]||brand||"Distributore";
-  const addr=[r["Indirizzo"],r["Comune"]].filter(Boolean).join(", ");
-  const mu=r["Latitudine"]&&r["Longitudine"]?`https://maps.google.com/?q=${r["Latitudine"]},${r["Longitudine"]}`:"";
-  const dc=r.delta==null||Math.abs(r.delta)<0.0005?"":r.delta>0?"dup":"ddn";
-  const db=r.delta==null?"":(Math.abs(r.delta)<0.0005
-    ?`<span class="db ds">= stabile</span>`
-    :r.delta>0?`<span class="db du">▲ +${r.delta.toFixed(3)}</span>`
-              :`<span class="db dd">▼ ${r.delta.toFixed(3)}</span>`);
-  const distHtml=showDist&&r.dist!=null?`<div class="dist-tag">📍 ${r.dist.toFixed(1)} km</div>`:"";
-  const avgBadge=avgNational&&r.price<avgNational?`<span class="tag tag-avg">★ sotto media</span>`:"";
-  return `<div class="card${i===0?" top":""} ${dc}" style="animation-delay:${i*.06}s">
-    <div class="rank">${i+1}</div>
-    <div class="ci">
-      <div class="cn">${name}</div>
-      <div class="ca">${addr}</div>
-      <div class="cm">
-        ${brand?`<span class="tag tb">${brand}</span>`:""}
-        <span class="tag ${r.self2?"ts":"tv"}">${r.self2?"Self":"Servito"}</span>
-        ${r["dtComu"]?`<span class="tag td">${r["dtComu"].slice(0,16)}</span>`:""}
-        ${db}
-        ${avgBadge}
+  const rows=PRZ.filter(r=>{
+    const id=r["idImpianto"];
+    return ids.has(id) && N(r["descCarburante"])===N(selCarb) && (selMode==="all" || (selMode==="self"?r["isSelf"]==="1":r["isSelf"]==="0"));
+  }).map(r=>({...r,...IMP[r["idImpianto"]], p:parseFloat(r["prezzo"].replace(",","."))})).sort((a,b)=>a.p-b.p).slice(0,10);
+  
+  if(!rows.length) area.innerHTML='<div class="empty">Nessun prezzo trovato per questa selezione.</div>';
+  else area.innerHTML=`<div class="rtitle"><div class="rline1">${selCarb} a ${selCom}</div></div><div class="cards">`+rows.map((r,i)=>`
+    <div class="card ${i===0?'top':''}">
+      <div class="rank">${i+1}</div>
+      <div class="ci">
+        <div class="cn">${r["Bandiera"]||'Indipendente'}</div>
+        <div class="ca">${r["Indirizzo"]}</div>
+        <div class="cm"><span class="tag ${r["isSelf"]==="1"?'ts':'tv'}">${r["isSelf"]==="1"?'Self':'Servito'}</span></div>
       </div>
-      ${distHtml}
-      ${mu?`<a href="${mu}" target="_blank" class="ml">📍 Apri in Maps →</a>`:""}
-    </div>
-    <div class="pc">
-      <div class="pm">${r.price.toFixed(3)}</div>
-      <div class="pu">€/litro</div>
-      ${r.prevP!=null?`<div class="pp">prec. ${r.prevP.toFixed(3)}</div>`:""}
-    </div>
-  </div>`;
+      <div class="pc"><div class="pm">${r.p.toFixed(3)}</div><div class="pu">€/L</div></div>
+    </div>`).join("")+`</div>`;
 }
 
-function openModal(){
-  document.getElementById("modal-carb").classList.add("open");
-}
-function closeModal(){
-  document.getElementById("modal-carb").classList.remove("open");
-}
-function selDaModal(c, el){
-  closeModal();
-  // Aggiorna chip principale "Altro" per mostrare cosa è selezionato
-  document.querySelectorAll("#chips .chip").forEach(e=>e.classList.remove("on"));
-  const altroChip = document.getElementById("chip-altro");
-  if(altroChip){
-    altroChip.textContent = `🔍 ${c}`;
-    altroChip.classList.add("on");
-  }
-  selCarb = c;
-  // Aggiorna selezione nella modale
-  document.querySelectorAll("#modal-chips .chip").forEach(e=>e.classList.remove("on"));
-  el.classList.add("on");
-  updateResults();
-}
-// Chiudi modale cliccando fuori
-document.getElementById("modal-carb").addEventListener("click", function(e){
-  if(e.target===this) closeModal();
-});
-
-function goBack(){
-  document.getElementById("screen-results").style.display="none";
-  document.getElementById("screen-load").style.display="block";
-  impText=""; przText="";
-  document.getElementById("drop").classList.remove("ok");
-  document.getElementById("drop-icon").textContent="📂";
-  document.getElementById("drop-msg").textContent="Clicca qui o trascina i 2 file CSV";
-  document.getElementById("file-tags").innerHTML="";
-  document.getElementById("btn-go").classList.remove("on");
-  document.getElementById("file-input").value="";
-}
-async function provaCaricamentoAutomatico(retry = 0) {
+async function provaCaricamentoAutomatico() {
   const banner = document.getElementById("auto-loading");
-  const msg = document.querySelector(".loading-msg");
-  const sub = document.querySelector(".loading-sub");
-
   try {
-    msg.textContent = "Scarico i file...";
-    sub.textContent = "Contatto il server...";
-
-    const t = new Date().getTime();
-    const imp = await fetch(`./anagrafica_impianti_attivi.csv?v=${t}`, { cache: "no-store" });
-    const prz = await fetch(`./prezzo_alle_8.csv?v=${t}`, { cache: "no-store" });
-
-    sub.textContent = "Impianti: " + imp.status + " | Prezzi: " + prz.status;
-
-    if (imp.status !== 200 || prz.status !== 200) {
-      msg.textContent = "File non trovati";
-      setTimeout(() => banner.classList.add("hidden"), 2000);
-      return;
-    }
-
-    msg.textContent = "Leggo impianti...";
-    impText = await imp.text();
-    sub.textContent = "Impianti letti: " + impText.length + " caratteri";
-
-    msg.textContent = "Leggo prezzi...";
-    przText = await prz.text();
-    sub.textContent = "Prezzi letti: " + przText.length + " caratteri";
-
-    msg.textContent = "Elaboro i dati...";
-    sub.textContent = "Parsing CSV in corso...";
-
-    setTimeout(() => {
-      banner.classList.add("hidden");
+    const resImp = await fetch("anagrafica_impianti_attivi.csv", { cache: "no-store" });
+    const resPrz = await fetch("prezzo_alle_8.csv", { cache: "no-store" });
+    if(resImp.ok && resPrz.ok){
+      let tImp = await resImp.text();
+      let tPrz = await resPrz.text();
+      // Salto riga estrazione MIMIT
+      impText = tImp.substring(tImp.indexOf("idImpianto"));
+      przText = tPrz.substring(tPrz.indexOf("idImpianto"));
       elabora();
-    }, 500);
-
-  } catch (e) {
-    msg.textContent = "ERRORE: " + e.message;
-    sub.textContent = e.stack || "";
-    setTimeout(() => banner.classList.add("hidden"), 5000);
-  }
+      banner.classList.add("hidden");
+    } else { throw new Error(); }
+  } catch(e){ banner.classList.add("hidden"); }
 }
-
-window.addEventListener("load", provaCaricamentoAutomatico);
+window.onload = provaCaricamentoAutomatico;
 </script>
 </body>
 </html>
