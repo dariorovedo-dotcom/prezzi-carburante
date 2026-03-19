@@ -383,6 +383,7 @@ function pk(id,c,s){ return id+"|"+N(c)+"|"+s; }
 
 // ── ELABORA ───────────────────────────────────────────────────────────────────
 function elabora(){
+  try {
   if(!impText||!przText){
     const e=document.getElementById("err-msg");
     e.textContent="Carica entrambi i file CSV prima di continuare.";
@@ -391,6 +392,7 @@ function elabora(){
 
   // Impianti
   const impRows=parseCSV(impText);
+  console.log("impRows:", impRows.length);
   if(!impRows.length){ showErr("Il file impianti non sembra valido. Riprova."); return; }
   IMP={}; const provSet=new Set(); COM_MAP={};
   for(const r of impRows){
@@ -419,9 +421,14 @@ function elabora(){
   try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch{}
   if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
   else { PREV={}; HAS_DELTA=false; }
-  try { if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap})); } catch(e) { console.log("localStorage pieno, snapshot saltato"); }
+  try { if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap})); } catch(e) { console.log("localStorage pieno"); }
 
   buildResults();
+  } catch(err) {
+    console.error("ERRORE in elabora():", err);
+    alert("Errore elaborazione: " + err.message);
+    document.getElementById("auto-loading").classList.add("hidden");
+  }
 }
 
 function showErr(msg){
