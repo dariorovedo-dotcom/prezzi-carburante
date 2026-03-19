@@ -27,8 +27,8 @@ jobs:
 
       - name: Scarica solo la prima riga del CSV prezzi
         run: |
-          # Scarica solo i primi 100 byte — basta per leggere "Estrazione del YYYY-MM-DD"
-          PRIMA_RIGA=$(curl -s --globoff --range 0-99 \
+          # Scarica il file completo e legge solo la prima riga
+          PRIMA_RIGA=$(curl -s --globoff \
             --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
             "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
             | head -1)
@@ -46,7 +46,10 @@ jobs:
           echo "Ultima estrazione salvata: $ULTIMA"
           echo "Nuova estrazione trovata: $PRIMA_RIGA"
 
-          if [ "$PRIMA_RIGA" = "$ULTIMA" ]; then
+          if [ -z "$PRIMA_RIGA" ]; then
+            echo "Prima riga vuota (server non supporta range), forzo il download."
+            echo "AGGIORNA=true" >> $GITHUB_ENV
+          elif [ "$PRIMA_RIGA" = "$ULTIMA" ]; then
             echo "Dati invariati, nessun aggiornamento necessario."
             echo "AGGIORNA=false" >> $GITHUB_ENV
           else
