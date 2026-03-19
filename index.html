@@ -781,45 +781,45 @@ function goBack(){
 }
 async function provaCaricamentoAutomatico(retry = 0) {
   const banner = document.getElementById("auto-loading");
+  const msg = document.querySelector(".loading-msg");
+  const sub = document.querySelector(".loading-sub");
 
   try {
-    console.log("Tentativo caricamento automatico CSV");
+    msg.textContent = "Scarico i file...";
+    sub.textContent = "Contatto il server...";
 
-    // Anti-cache (fondamentale)
     const t = new Date().getTime();
-
     const imp = await fetch(`./anagrafica_impianti_attivi.csv?v=${t}`, { cache: "no-store" });
     const prz = await fetch(`./prezzo_alle_8.csv?v=${t}`, { cache: "no-store" });
 
-    console.log("Status impianti:", imp.status);
-    console.log("Status prezzi:", prz.status);
+    sub.textContent = "Impianti: " + imp.status + " | Prezzi: " + prz.status;
 
     if (imp.status !== 200 || prz.status !== 200) {
-      console.log("File non ancora disponibili");
-
-      // Riprova fino a 3 volte
-      if (retry < 3) {
-        console.log("Retry tra 2 secondi...");
-        setTimeout(() => provaCaricamentoAutomatico(retry + 1), 2000);
-        return;
-      }
-
-      console.log("Fallito dopo vari tentativi");
-      banner.classList.add("hidden");
+      msg.textContent = "File non trovati";
+      setTimeout(() => banner.classList.add("hidden"), 2000);
       return;
     }
 
+    msg.textContent = "Leggo impianti...";
     impText = await imp.text();
+    sub.textContent = "Impianti letti: " + impText.length + " caratteri";
+
+    msg.textContent = "Leggo prezzi...";
     przText = await prz.text();
+    sub.textContent = "Prezzi letti: " + przText.length + " caratteri";
 
-    console.log("CSV caricati, avvio elaborazione");
+    msg.textContent = "Elaboro i dati...";
+    sub.textContent = "Parsing CSV in corso...";
 
-    banner.classList.add("hidden");
-    elabora();
+    setTimeout(() => {
+      banner.classList.add("hidden");
+      elabora();
+    }, 500);
 
   } catch (e) {
-    console.log("Errore caricamento automatico:", e);
-    banner.classList.add("hidden");
+    msg.textContent = "ERRORE: " + e.message;
+    sub.textContent = e.stack || "";
+    setTimeout(() => banner.classList.add("hidden"), 5000);
   }
 }
 
