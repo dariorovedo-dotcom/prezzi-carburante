@@ -772,20 +772,32 @@ function goBack(){
   document.getElementById("btn-go").classList.remove("on");
   document.getElementById("file-input").value="";
 }
-async function provaCaricamentoAutomatico() {
+async function provaCaricamentoAutomatico(retry = 0) {
   const banner = document.getElementById("auto-loading");
-  try {
 
+  try {
     console.log("Tentativo caricamento automatico CSV");
 
-    const imp = await fetch("./anagrafica_impianti_attivi.csv");
-    const prz = await fetch("./prezzo_alle_8.csv");
+    // Anti-cache (fondamentale)
+    const t = new Date().getTime();
+
+    const imp = await fetch(`./anagrafica_impianti_attivi.csv?v=${t}`, { cache: "no-store" });
+    const prz = await fetch(`./prezzo_alle_8.csv?v=${t}`, { cache: "no-store" });
 
     console.log("Status impianti:", imp.status);
     console.log("Status prezzi:", prz.status);
 
-    if (!imp.ok || !prz.ok) {
-      console.log("File non trovati");
+    if (imp.status !== 200 || prz.status !== 200) {
+      console.log("File non ancora disponibili");
+
+      // Riprova fino a 3 volte
+      if (retry < 3) {
+        console.log("Retry tra 2 secondi...");
+        setTimeout(() => provaCaricamentoAutomatico(retry + 1), 2000);
+        return;
+      }
+
+      console.log("Fallito dopo vari tentativi");
       banner.classList.add("hidden");
       return;
     }
