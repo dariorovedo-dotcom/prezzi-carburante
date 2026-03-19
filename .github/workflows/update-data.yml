@@ -76,9 +76,16 @@ jobs:
           echo "$PRIMA_RIGA" > last_extraction.txt
           echo "✅ CSV aggiornati e last_extraction.txt salvato."
 
-      - name: Commit e push (solo se ci sono dati nuovi)
-  run: |
-    git config user.name "github-actions[bot]"
-    git add .
-    git commit -m "Aggiornamento dati"
-    git push
+       - name: Commit e push (solo se ci sono modifiche)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica, niente commit"
+          else
+            git commit -m "Aggiornamento dati"
+            git push
+          fi
