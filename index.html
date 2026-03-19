@@ -207,6 +207,15 @@ font-size:12px;
 }
 .modal-close:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
 .chip-alt { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#d97706; }
+
+/* ── MEDIA NAZIONALE ── */
+.avg-banner {
+  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15);
+  border-radius:4px; padding:.45rem 1rem; margin-bottom:.8rem;
+  font-size:.75rem; color:#818cf8; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+}
+.avg-banner b { color:#a5b4fc; }
+.tag-avg { background:rgba(99,102,241,.15); color:#818cf8; border:1px solid rgba(99,102,241,.25); font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; padding:.1rem .38rem; border-radius:2px; font-weight:700; }
 </style>
 </head>
 <body>
@@ -410,7 +419,7 @@ function elabora(){
   try{ snap=JSON.parse(localStorage.getItem(SNAP_KEY)); }catch{}
   if(snap&&snap.date!==today&&snap.prices){ PREV=snap.prices; SNAP_DATE=snap.date; HAS_DELTA=true; }
   else { PREV={}; HAS_DELTA=false; }
-  if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap}));
+  try { if(!snap||snap.date!==today) localStorage.setItem(SNAP_KEY,JSON.stringify({date:today,prices:todayMap})); } catch(e) { console.log("localStorage pieno, snapshot saltato"); }
 
   buildResults();
 }
@@ -656,6 +665,15 @@ const lastUpdate = rows5
 const up = rows5.filter(r => r.delta > 0).length;
 const down = rows5.filter(r => r.delta < 0).length;
 
+// media nazionale per il carburante selezionato
+const allNational = PRZ
+  .filter(r => N(r["descCarburante"])===N(selCarb))
+  .map(r => parseFloat((r["prezzo"]||"0").replace(",",".")))
+  .filter(p => p > 0.5 && p < 5);
+const avgNational = allNational.length
+  ? (allNational.reduce((a,b)=>a+b,0) / allNational.length).toFixed(3)
+  : null;
+
 area.innerHTML=`
 <div class="rtitle">
 
@@ -674,13 +692,15 @@ area.innerHTML=`
 
 </div>
 
+${avgNational ? `<div class="avg-banner">📊 Media nazionale ${selCarb}: <b>${avgNational} €/L</b> <span style="color:#6b7280;font-size:.7rem">(su ${allNational.length.toLocaleString("it-IT")} rilevazioni)</span></div>` : ""}
+
 <div class="cards">
-${rows5.map((r,i)=>card(r,i,false)).join("")}
+${rows5.map((r,i)=>card(r,i,false,avgNational?parseFloat(avgNational):null)).join("")}
 </div>
 `;
 }
 
-function card(r,i,showDist){
+function card(r,i,showDist,avgNational=null){
   const brand=r["Bandiera"]||r["gestoreImpianto"]||"";
   const name=r["Nome Impianto"]||r["gestoreImpianto"]||brand||"Distributore";
   const addr=[r["Indirizzo"],r["Comune"]].filter(Boolean).join(", ");
@@ -691,6 +711,7 @@ function card(r,i,showDist){
     :r.delta>0?`<span class="db du">▲ +${r.delta.toFixed(3)}</span>`
               :`<span class="db dd">▼ ${r.delta.toFixed(3)}</span>`);
   const distHtml=showDist&&r.dist!=null?`<div class="dist-tag">📍 ${r.dist.toFixed(1)} km</div>`:"";
+  const avgBadge=avgNational&&r.price<avgNational?`<span class="tag tag-avg">★ sotto media</span>`:"";
   return `<div class="card${i===0?" top":""} ${dc}" style="animation-delay:${i*.06}s">
     <div class="rank">${i+1}</div>
     <div class="ci">
@@ -701,6 +722,7 @@ function card(r,i,showDist){
         <span class="tag ${r.self2?"ts":"tv"}">${r.self2?"Self":"Servito"}</span>
         ${r["dtComu"]?`<span class="tag td">${r["dtComu"].slice(0,16)}</span>`:""}
         ${db}
+        ${avgBadge}
       </div>
       ${distHtml}
       ${mu?`<a href="${mu}" target="_blank" class="ml">📍 Apri in Maps →</a>`:""}
@@ -750,20 +772,32 @@ function goBack(){
   document.getElementById("btn-go").classList.remove("on");
   document.getElementById("file-input").value="";
 }
-async function provaCaricamentoAutomatico() {
+async function provaCaricamentoAutomatico(retry = 0) {
   const banner = document.getElementById("auto-loading");
-  try {
 
+  try {
     console.log("Tentativo caricamento automatico CSV");
 
-    const imp = await fetch("./anagrafica_impianti_attivi.csv");
-    const prz = await fetch("./prezzo_alle_8.csv");
+    // Anti-cache (fondamentale)
+    const t = new Date().getTime();
+
+    const imp = await fetch(`./anagrafica_impianti_attivi.csv?v=${t}`, { cache: "no-store" });
+    const prz = await fetch(`./prezzo_alle_8.csv?v=${t}`, { cache: "no-store" });
 
     console.log("Status impianti:", imp.status);
     console.log("Status prezzi:", prz.status);
 
-    if (!imp.ok || !prz.ok) {
-      console.log("File non trovati");
+    if (imp.status !== 200 || prz.status !== 200) {
+      console.log("File non ancora disponibili");
+
+      // Riprova fino a 3 volte
+      if (retry < 3) {
+        console.log("Retry tra 2 secondi...");
+        setTimeout(() => provaCaricamentoAutomatico(retry + 1), 2000);
+        return;
+      }
+
+      console.log("Fallito dopo vari tentativi");
       banner.classList.add("hidden");
       return;
     }
