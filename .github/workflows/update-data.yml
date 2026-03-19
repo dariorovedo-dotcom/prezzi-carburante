@@ -77,12 +77,8 @@ jobs:
           echo "✅ CSV aggiornati e last_extraction.txt salvato."
 
       - name: Commit e push (solo se ci sono dati nuovi)
-        if: env.AGGIORNA == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add prezzo_alle_8.csv \
-                  anagrafica_impianti_attivi.csv \
-                  last_extraction.txt
-          git commit -m "Aggiornamento dati: $PRIMA_RIGA"
-          git push
+  run: |
+    git config user.name "github-actions[bot]"
+    git add .
+    git commit -m "Aggiornamento dati"
+    git push
