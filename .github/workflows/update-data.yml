@@ -2,7 +2,6 @@ name: Aggiorna i dati
 
 on:
   schedule:
-    - cron: '0 6 * * *'
     - cron: '0 7 * * *'
     - cron: '0 8 * * *'
     - cron: '0 9 * * *'
@@ -25,43 +24,46 @@ jobs:
 
       - name: Scarica i CSV dal MIMIT
         run: |
-          echo "=== Download prezzo_alle_8.csv ==="
-          curl -L -f -s \
+          echo "=== Provo a scaricare prezzo_alle_8.csv ==="
+          HTTP_CODE=$(curl -L -s -o prezzo_alle_8.csv -w "%{http_code}" \
             --max-time 60 \
-            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-            "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
-            -o prezzo_alle_8.csv
-          echo "Dimensione prezzo_alle_8.csv: $(wc -c < prezzo_alle_8.csv) bytes"
-          echo "Prime 2 righe prezzo_alle_8.csv:"
-          head -2 prezzo_alle_8.csv
+            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+            -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+            -H "Accept-Language: it-IT,it;q=0.9" \
+            -H "Referer: https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" \
+            "https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv")
+          echo "HTTP status prezzo: $HTTP_CODE"
+          echo "Dimensione: $(wc -c < prezzo_alle_8.csv) bytes"
+          echo "Prime 3 righe:"
+          head -3 prezzo_alle_8.csv || true
 
-          echo "=== Download anagrafica_impianti_attivi.csv ==="
-          curl -L -f -s \
+          echo "=== Provo a scaricare anagrafica_impianti_attivi.csv ==="
+          HTTP_CODE2=$(curl -L -s -o anagrafica_impianti_attivi.csv -w "%{http_code}" \
             --max-time 60 \
-            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-            "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv" \
-            -o anagrafica_impianti_attivi.csv
-          echo "Dimensione anagrafica: $(wc -c < anagrafica_impianti_attivi.csv) bytes"
-          echo "Prime 2 righe anagrafica:"
-          head -2 anagrafica_impianti_attivi.csv
+            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+            -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+            -H "Accept-Language: it-IT,it;q=0.9" \
+            -H "Referer: https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" \
+            "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv")
+          echo "HTTP status anagrafica: $HTTP_CODE2"
+          echo "Dimensione: $(wc -c < anagrafica_impianti_attivi.csv) bytes"
+          echo "Prime 3 righe:"
+          head -3 anagrafica_impianti_attivi.csv || true
 
       - name: Verifica che i file siano validi
         run: |
-          # Controlla che i file contengano l'intestazione giusta
           if ! grep -q "idImpianto" prezzo_alle_8.csv; then
-            echo "ERRORE: prezzo_alle_8.csv non contiene dati validi"
-            cat prezzo_alle_8.csv | head -5
+            echo "ERRORE: prezzo_alle_8.csv non valido. Contenuto ricevuto:"
+            cat prezzo_alle_8.csv | head -10
             exit 1
           fi
           if ! grep -q "idImpianto" anagrafica_impianti_attivi.csv; then
-            echo "ERRORE: anagrafica_impianti_attivi.csv non contiene dati validi"
-            cat anagrafica_impianti_attivi.csv | head -5
+            echo "ERRORE: anagrafica non valida. Contenuto ricevuto:"
+            cat anagrafica_impianti_attivi.csv | head -10
             exit 1
           fi
-          echo "Entrambi i file sono validi."
-          # Salva la data di estrazione
+          echo "Entrambi i file sono validi!"
           head -1 prezzo_alle_8.csv > ultima_estrazione.txt
-          echo "Data estrazione: $(cat ultima_estrazione.txt)"
 
       - name: Commit e push
         run: |
@@ -69,7 +71,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add prezzo_alle_8.csv anagrafica_impianti_attivi.csv ultima_estrazione.txt
           if git diff --cached --quiet; then
-            echo "Nessuna modifica, niente commit."
+            echo "Nessuna modifica."
           else
             git commit -m "Aggiornamento dati: $(cat ultima_estrazione.txt)"
             git push
