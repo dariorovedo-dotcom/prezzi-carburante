@@ -261,19 +261,33 @@ function parseCSV(testo) {
   const righe = testo.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
   // Trova la riga intestazione (contiene "idImpianto")
   const startIdx = righe.findIndex(r => r.includes("idImpianto"));
-  if (startIdx === -1) return [];
+  if (startIdx === -1) {
+    console.error("parseCSV: intestazione non trovata. Prime righe:", righe.slice(0,3));
+    return [];
+  }
   const valide = righe.slice(startIdx);
   if (valide.length < 2) return [];
-  const hdr = valide[0].split("|").map(h => h.trim().replace(/"/g, ""));
+
+  // Auto-rileva separatore: | oppure ; oppure ,
+  const intestazione = valide[0];
+  let sep = "|";
+  if (!intestazione.includes("|")) {
+    if (intestazione.includes(";")) sep = ";";
+    else if (intestazione.includes(",")) sep = ",";
+  }
+  console.log("parseCSV: sep=" + JSON.stringify(sep) + " righe=" + valide.length + " header=" + intestazione.slice(0,60));
+
+  const hdr = intestazione.split(sep).map(h => h.trim().replace(/"/g, ""));
   const rows = [];
   for (let i = 1; i < valide.length; i++) {
     const line = valide[i].trim();
     if (!line) continue;
-    const v = line.split("|").map(s => s.trim().replace(/"/g, ""));
+    const v = line.split(sep).map(s => s.trim().replace(/"/g, ""));
     const r = {};
     hdr.forEach((h, j) => r[h] = v[j] ?? "");
     rows.push(r);
   }
+  console.log("parseCSV: righe parsate=" + rows.length + " campi=" + JSON.stringify(hdr));
   return rows;
 }
 
@@ -309,8 +323,11 @@ function elabora() {
   const dImp = parseCSV(impText);
   const dPrz = parseCSV(przText);
 
+  console.log("elabora: dImp=" + dImp.length + " dPrz=" + dPrz.length);
   if (!dImp.length || !dPrz.length) {
-    alert("Errore: i file non contengono dati validi. Assicurati di usare i file del MIMIT.");
+    const msg = "Errore parsing: impianti=" + dImp.length + " prezzi=" + dPrz.length + 
+      "\nApri F12 > Console per i dettagli.";
+    alert(msg);
     return;
   }
 
