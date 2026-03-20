@@ -23,62 +23,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Scarica solo la prima riga del CSV prezzi
+      - name: Scarica i CSV dal MIMIT
         run: |
-          PRIMA_RIGA=$(curl -s --globoff \
-            --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
+          echo "=== Download prezzo_alle_8.csv ==="
+          curl -L -f -s \
+            --max-time 60 \
+            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
             "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
-            | head -1)
-          echo "Prima riga trovata: $PRIMA_RIGA"
-          echo "PRIMA_RIGA=$PRIMA_RIGA" >> $GITHUB_ENV
+            -o prezzo_alle_8.csv
+          echo "Dimensione prezzo_alle_8.csv: $(wc -c < prezzo_alle_8.csv) bytes"
+          echo "Prime 2 righe prezzo_alle_8.csv:"
+          head -2 prezzo_alle_8.csv
 
-      - name: Controlla se i dati sono aggiornati
-        run: |
-          if [ -f "last_extraction.txt" ]; then
-            ULTIMA=$(cat last_extraction.txt)
-          else
-            ULTIMA=""
-          fi
-          echo "Ultima estrazione salvata: $ULTIMA"
-          echo "Nuova estrazione trovata: $PRIMA_RIGA"
-
-          if [ -z "$PRIMA_RIGA" ]; then
-            echo "Prima riga vuota, forzo il download."
-            echo "AGGIORNA=true" >> $GITHUB_ENV
-          elif [ "$PRIMA_RIGA" = "$ULTIMA" ]; then
-            echo "Dati invariati, nessun aggiornamento necessario."
-            echo "AGGIORNA=false" >> $GITHUB_ENV
-          else
-            echo "Dati nuovi rilevati! Procedo con il download completo."
-            echo "AGGIORNA=true" >> $GITHUB_ENV
-          fi
-
-      - name: Scarica i CSV completi (solo se ci sono dati nuovi)
-        if: env.AGGIORNA == 'true'
-        run: |
-          curl -f -s --globoff \
-            --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
-            "https://www.mimit.gov.it/images/exportCSV/prezzo%20alle%208.csv" \
-            -o prezzo_alle_8.csv || \
-            { echo "Errore download prezzo_alle_8.csv"; exit 1; }
-
-          curl -f -s --globoff \
-            --user-agent "Mozilla/5.0 (compatible; GitHub-Actions)" \
+          echo "=== Download anagrafica_impianti_attivi.csv ==="
+          curl -L -f -s \
+            --max-time 60 \
+            --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
             "https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv" \
-            -o anagrafica_impianti_attivi.csv || \
-            { echo "Errore download anagrafica"; exit 1; }
+            -o anagrafica_impianti_attivi.csv
+          echo "Dimensione anagrafica: $(wc -c < anagrafica_impianti_attivi.csv) bytes"
+          echo "Prime 2 righe anagrafica:"
+          head -2 anagrafica_impianti_attivi.csv
 
-          echo "$PRIMA_RIGA" > last_extraction.txt
-          echo "CSV aggiornati e last_extraction.txt salvato."
+      - name: Verifica che i file siano validi
+        run: |
+          # Controlla che i file contengano l'intestazione giusta
+          if ! grep -q "idImpianto" prezzo_alle_8.csv; then
+            echo "ERRORE: prezzo_alle_8.csv non contiene dati validi"
+            cat prezzo_alle_8.csv | head -5
+            exit 1
+          fi
+          if ! grep -q "idImpianto" anagrafica_impianti_attivi.csv; then
+            echo "ERRORE: anagrafica_impianti_attivi.csv non contiene dati validi"
+            cat anagrafica_impianti_attivi.csv | head -5
+            exit 1
+          fi
+          echo "Entrambi i file sono validi."
+          # Salva la data di estrazione
+          head -1 prezzo_alle_8.csv > ultima_estrazione.txt
+          echo "Data estrazione: $(cat ultima_estrazione.txt)"
 
-      - name: Commit e push (solo se ci sono modifiche)
+      - name: Commit e push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
+          git add prezzo_alle_8.csv anagrafica_impianti_attivi.csv ultima_estrazione.txt
           if git diff --cached --quiet; then
             echo "Nessuna modifica, niente commit."
           else
-            git commit -m "Aggiornamento dati: $PRIMA_RIGA"
+            git commit -m "Aggiornamento dati: $(cat ultima_estrazione.txt)"
             git push
           fi
