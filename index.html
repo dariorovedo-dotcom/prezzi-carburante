@@ -654,6 +654,13 @@ function goBack() {
   document.getElementById("file-input").value = "";
 }
 
+// ── DECODIFICA ENCODING-SAFE (UTF-8 con fallback Windows-1252) ────────────────
+function decodeBuffer(buffer) {
+  const bytes = new Uint8Array(buffer);
+  try { return new TextDecoder("utf-8", { fatal: true }).decode(bytes); }
+  catch { return new TextDecoder("windows-1252").decode(bytes); }
+}
+
 // ── CARICAMENTO AUTOMATICO ────────────────────────────────────────────────────
 async function provaCaricamentoAutomatico() {
   const banner = document.getElementById("auto-loading");
@@ -667,8 +674,10 @@ async function provaCaricamentoAutomatico() {
     ]);
     if (!ri.ok || !rp.ok) throw new Error("File non trovati (status " + ri.status + "/" + rp.status + ")");
     sub.textContent = "Leggo i dati...";
-    impText = await ri.text();
-    przText = await rp.text();
+    // Usa ArrayBuffer per rilevare correttamente l'encoding (UTF-8 o Windows-1252)
+    const [bufImp, bufPrz] = await Promise.all([ri.arrayBuffer(), rp.arrayBuffer()]);
+    impText = decodeBuffer(bufImp);
+    przText = decodeBuffer(bufPrz);
     sub.textContent = "Elaboro...";
     setTimeout(() => { banner.classList.add("hidden"); elabora(); }, 300);
   } catch (e) {
