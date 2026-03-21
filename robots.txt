@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dariorovedo-dotcom.github.io/prezzi-carburante/sitemap.xml
