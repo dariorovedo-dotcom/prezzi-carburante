@@ -693,7 +693,7 @@ function updateResults() {
       <div class="cards">${geoRows.map((r, i) => cardHtml(r, i, true)).join("")}</div>`;
   pushURL();
   lastRows = geoRows;
-  if (currentView === "map") updateMap(geoRows);
+  updateMap(geoRows);
     return;
   }
 
@@ -751,7 +751,7 @@ function updateResults() {
     <div class="cards">${rows5.map((r, i) => cardHtml(r, i, false, avgNational ? parseFloat(avgNational) : null)).join("")}</div>`;
   pushURL();
   lastRows = rows5;
-  if (currentView === "map") updateMap(rows5);
+  updateMap(rows5);
 }
 
 // ── CARD HTML ─────────────────────────────────────────────────────────────────
@@ -935,7 +935,8 @@ function setView(v) {
   document.querySelector(".results-wrap").style.display = v === "list" ? "block" : "none";
   if (v === "map") {
     if (!leafMap) initMap();
-    setTimeout(() => { leafMap.invalidateSize(); updateMap(lastRows); }, 150);
+    // Prima invalida le dimensioni, poi ricalcola i risultati con la mappa visibile
+    setTimeout(() => { leafMap.invalidateSize(); updateResults(); }, 200);
   }
 }
 
@@ -970,7 +971,7 @@ function updateMap(rows) {
     const color = i === 0 ? "#f59e0b" : "#4b5563";
     const icon = L.divIcon({
       className: "",
-      html: `<div style="background:${color};color:#000;font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)">${r.price.toFixed(3)}</div>`,
+      html: `<div style="background:${color};color:${i===0?'#000':'#e8e0d0'};font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)">${r.price.toFixed(3)}</div>`,
       iconAnchor: [20, 10]
     });
     const marker = L.marker([lat, lon], { icon }).addTo(leafMap);
@@ -987,7 +988,18 @@ function updateMap(rows) {
     leafMarkers.push(marker);
     bounds.push([lat, lon]);
   });
-  if (bounds.length) leafMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+
+  if (bounds.length) {
+    const lb = L.latLngBounds(bounds);
+    // Forza il ricalcolo delle dimensioni poi applica i bounds
+    leafMap.invalidateSize();
+    leafMap.fitBounds(lb, { padding: [40, 40], maxZoom: 15 });
+    // Secondo tentativo dopo un breve delay per garantire il rendering
+    setTimeout(() => {
+      leafMap.invalidateSize();
+      leafMap.fitBounds(lb, { padding: [40, 40], maxZoom: 15 });
+    }, 300);
+  }
 }
 
 // ── PREFERITI ─────────────────────────────────────────────────────────────────
@@ -1017,6 +1029,7 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
 
 
 
