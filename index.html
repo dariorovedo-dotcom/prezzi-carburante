@@ -974,8 +974,8 @@ function updateMap(rows) {
     const icon = L.divIcon({
       className: "",
       html: `<div style="background:${color};color:${textColor};font-family:'Bebas Neue',sans-serif;font-size:.8rem;padding:.2rem .45rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.7);border:1px solid ${i===0?'#fbbf24':'#374151'};display:inline-block">${priceText}</div>`,
-      iconSize: null,
-      iconAnchor: null
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
     });
     const marker = L.marker([lat, lon], { icon }).addTo(leafMap);
     marker.bindPopup(`
