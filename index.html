@@ -968,10 +968,11 @@ function updateMap(rows) {
     const name = imp["Nome Impianto"] || imp.gestoreImpianto || imp.Bandiera || "Distributore";
     const addr = [imp.Indirizzo, imp.Comune].filter(Boolean).join(", ");
     const isSelf = r.self2 || r.isSelf === "1";
-    const color = i === 0 ? "#f59e0b" : "#4b5563";
+    const color = i === 0 ? "#f59e0b" : "#1f2937";
+    const textColor = i === 0 ? "#000" : "#f3f4f6";
     const icon = L.divIcon({
       className: "",
-      html: `<div style="background:${color};color:${i===0?'#000':'#e8e0d0'};font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)">${r.price.toFixed(3)}</div>`,
+      html: `<div style="background:${color};color:${textColor};font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:.2rem .4rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.6);border:1px solid ${i===0?'#f59e0b':'#4b5563'}">${r.price.toFixed(3)}</div>`,
       iconAnchor: [20, 10]
     });
     const marker = L.marker([lat, lon], { icon }).addTo(leafMap);
@@ -1029,6 +1030,7 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
 
 
 
