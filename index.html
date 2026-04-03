@@ -334,6 +334,7 @@ let FAVS = new Set();  // idImpianto preferiti
 let favFilter = false; // mostra solo preferiti
 let currentView = "list"; // "list" | "map"
 let leafMap = null, leafMarkers = [];
+let lastRows = [];     // ultimi risultati per ridisegno mappa
 
 const SNAP_KEY = "carb_snap_v3";
 const LABELS = {
@@ -690,7 +691,7 @@ function updateResults() {
       <div class="cards">${geoRows.map((r, i) => cardHtml(r, i, true)).join("")}</div>`;
     pushURL();
     updateMap(geoRows);
-    return;
+    lastRows = geoRows;
   }
 
   // — MODALITÀ NORMALE —
@@ -747,6 +748,7 @@ function updateResults() {
     <div class="cards">${rows5.map((r, i) => cardHtml(r, i, false, avgNational ? parseFloat(avgNational) : null)).join("")}</div>`;
   pushURL();
   updateMap(rows5);
+  lastRows = rows5;
 }
 
 // ── CARD HTML ─────────────────────────────────────────────────────────────────
@@ -867,6 +869,14 @@ let acFocused = -1;
 
 function onAcInput(val) {
   acFocused = -1;
+  // Se geo è attivo, disattivalo silenziosamente appena l'utente inizia a digitare
+  if (geoMode) {
+    geoMode = false; userLat = null; userLon = null;
+    const btn = document.getElementById("btn-geo");
+    btn.textContent = "📍 Trovami i distributori più vicini";
+    btn.classList.remove("active"); btn.disabled = false;
+    document.getElementById("geo-row").classList.remove("show");
+  }
   const q = val.trim().toUpperCase();
   if (!q || q.length < 2) { closeAc(); return; }
   const matches = ALL_COMUNI.filter(x => x.com.startsWith(q) || x.com.includes(q)).slice(0, 40);
@@ -922,7 +932,7 @@ function setView(v) {
   document.querySelector(".results-wrap").style.display = v === "list" ? "block" : "none";
   if (v === "map") {
     if (!leafMap) initMap();
-    setTimeout(() => leafMap.invalidateSize(), 100);
+    setTimeout(() => { leafMap.invalidateSize(); updateMap(lastRows); }, 150);
   }
 }
 
@@ -1004,4 +1014,5 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
 
