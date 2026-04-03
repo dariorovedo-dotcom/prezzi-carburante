@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Prezzi Carburante Italia</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
 body { background:#0a0c10; color:#e8e0d0; font-family:'DM Sans',sans-serif; min-height:100vh; }
@@ -107,6 +109,36 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 .tag-avg { background:rgba(99,102,241,.15); color:#818cf8; border:1px solid rgba(99,102,241,.25); font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; padding:.1rem .38rem; border-radius:2px; font-weight:700; }
 .chip-alt { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#d97706; }
 
+/* ── AUTOCOMPLETE ── */
+.ac-wrap { position:relative; }
+.ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#1a1c22; border:1px solid rgba(245,158,11,.3); border-radius:4px; max-height:220px; overflow-y:auto; z-index:100; display:none; }
+.ac-list.open { display:block; }
+.ac-item { padding:.5rem .8rem; font-size:.84rem; cursor:pointer; color:#d1c9b8; border-bottom:1px solid rgba(255,255,255,.04); display:flex; justify-content:space-between; }
+.ac-item:hover, .ac-item.focused { background:rgba(245,158,11,.1); color:#f59e0b; }
+.ac-item .ac-prov { font-size:.68rem; color:#4b5563; }
+
+/* ── MAPPA ── */
+.view-toggle { display:flex; border:1px solid rgba(255,255,255,.1); border-radius:3px; overflow:hidden; width:fit-content; margin:0 2rem .8rem; }
+.view-toggle button { background:transparent; border:none; color:#6b7280; padding:.38rem 1rem; font-family:'DM Sans',sans-serif; font-size:.78rem; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:.35rem; }
+.view-toggle button.on { background:rgba(245,158,11,.15); color:#f59e0b; }
+#map-wrap { display:none; margin:0 2rem 2rem; border-radius:6px; overflow:hidden; border:1px solid rgba(255,255,255,.07); }
+#map-wrap.show { display:block; }
+#map { height:420px; }
+.leaflet-popup-content-wrapper { background:#13151c !important; border:1px solid rgba(245,158,11,.3) !important; border-radius:6px !important; color:#e8e0d0 !important; }
+.leaflet-popup-tip { background:#13151c !important; }
+.lp-name { font-weight:700; font-size:.9rem; color:#f59e0b; margin-bottom:.25rem; }
+.lp-addr { font-size:.74rem; color:#9ca3af; margin-bottom:.4rem; }
+.lp-price { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:#f59e0b; line-height:1; }
+.lp-unit { font-size:.65rem; color:#6b7280; }
+.lp-tags { display:flex; gap:.3rem; margin-top:.4rem; flex-wrap:wrap; }
+
+/* ── PREFERITI ── */
+.btn-fav { background:none; border:none; cursor:pointer; font-size:1rem; padding:.1rem .2rem; line-height:1; transition:transform .15s; opacity:.4; flex-shrink:0; align-self:flex-start; }
+.btn-fav:hover { transform:scale(1.2); opacity:.8; }
+.btn-fav.on { opacity:1; }
+.chip-fav { background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.25); color:#fbbf24; }
+.chip-fav.on { background:rgba(251,191,36,.18); border-color:#fbbf24; }
+
 /* ── MODALE ── */
 #modal-carb { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); align-items:center; justify-content:center; }
 #modal-carb.open { display:flex; }
@@ -131,11 +163,60 @@ select:disabled { opacity:.35; cursor:not-allowed; }
   .cn { font-size:.95rem; }
   .pm { font-size:2.1rem; }
 }
-    </style>
+</style>
+<!-- ============================================================
+     SEO META TAGS — copia tutto questo blocco e incollalo
+     nell'<head> del tuo index.html, prima del </head>
+     ============================================================ -->
 
-    <meta property="og:image" content="https://dariorovedo-dotcom.github.io/prezzi-carburante/og-image.png">
-    <meta name="description" content="Consulta i prezzi di benzina, diesel, GPL e metano in tutta Italia. Dati ufficiali MIMIT aggiornati ogni mattina alle 8:00.">
-    <meta name="robots" content="index, follow">
+<!-- Titolo e descrizione base -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prezzi Carburante Italia – Trova il distributore più vicino | Dati MIMIT</title>
+<meta name="description" content="Consulta i prezzi di benzina, diesel, GPL e metano in tutta Italia. Dati ufficiali del Ministero delle Imprese aggiornati ogni mattina alle 8:00. Trova il distributore più economico vicino a te.">
+<meta name="keywords" content="prezzi carburante, benzina economica, diesel prezzo, GPL metano, distributori vicino a me, prezzi benzina oggi, carburante Italia, MIMIT open data">
+<meta name="author" content="Dario Rovedo">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://dariorovedo-dotcom.github.io/prezzi-carburante/">
+
+<!-- Open Graph (Facebook, WhatsApp, Telegram) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dariorovedo-dotcom.github.io/prezzi-carburante/">
+<meta property="og:title" content="Prezzi Carburante Italia – Trova il distributore più vicino">
+<meta property="og:description" content="Dati ufficiali MIMIT aggiornati ogni mattina. Cerca benzina, diesel, GPL e metano per provincia, comune o GPS.">
+<meta property="og:image" content="https://dariorovedo-dotcom.github.io/prezzi-carburante/og-image.png">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Prezzi Carburante Italia">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://dariorovedo-dotcom.github.io/prezzi-carburante/">
+<meta name="twitter:title" content="Prezzi Carburante Italia – Trova il distributore più vicino">
+<meta name="twitter:description" content="Dati ufficiali MIMIT aggiornati ogni mattina. Cerca benzina, diesel, GPL e metano per provincia, comune o GPS.">
+<meta name="twitter:image" content="https://dariorovedo-dotcom.github.io/prezzi-carburante/og-image.png">
+
+<!-- Structured Data JSON-LD (aiuta Google a capire di cosa parla la pagina) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Prezzi Carburante Italia",
+  "url": "https://dariorovedo-dotcom.github.io/prezzi-carburante/",
+  "description": "Applicazione web per consultare i prezzi di benzina, diesel, GPL e metano in Italia. Dati ufficiali del Ministero delle Imprese e Made in Italy, aggiornati ogni giorno alle 8:00.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "it",
+  "author": {
+    "@type": "Person",
+    "name": "Dario Rovedo"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
 
 </head>
 <body>
@@ -187,16 +268,29 @@ select:disabled { opacity:.35; cursor:not-allowed; }
     <div class="row2">
       <div class="fg">
         <label class="fl">Provincia</label>
-        <select id="sel-prov" onchange="onProv()"><option value="">Seleziona...</option></select>
+        <select id="sel-prov" onchange="onProv()" style="display:none"><option value="">Seleziona...</option></select>
       </div>
       <div class="fg">
         <label class="fl">Comune</label>
-        <select id="sel-com" disabled onchange="onCom()"><option value="">Prima seleziona provincia</option></select>
+        <select id="sel-com" disabled onchange="onCom()" style="display:none"><option value="">Prima seleziona provincia</option></select>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Cerca comune o provincia</label>
+      <div class="ac-wrap">
+        <input type="text" id="ac-input" placeholder="Es: Trieste, Milano, Roma…" autocomplete="off" oninput="onAcInput(this.value)" onkeydown="onAcKey(event)" onfocus="onAcFocus()">
+        <div class="ac-list" id="ac-list"></div>
       </div>
     </div>
     <div class="fg">
       <label class="fl">Carburante</label>
       <div class="chips" id="chips"></div>
+    </div>
+    <div class="fg" id="fav-row" style="display:none">
+      <label class="fl">Filtro</label>
+      <div class="chips">
+        <button class="chip chip-fav" id="chip-fav" onclick="toggleFavFilter()">⭐ Preferiti</button>
+      </div>
     </div>
     <div class="fg">
       <label class="fl">Modalità</label>
@@ -208,6 +302,11 @@ select:disabled { opacity:.35; cursor:not-allowed; }
     </div>
   </div>
   <div class="divider"></div>
+  <div class="view-toggle">
+    <button id="vt-list" class="on" onclick="setView('list')">☰ Lista</button>
+    <button id="vt-map" onclick="setView('map')">🗺 Mappa</button>
+  </div>
+  <div id="map-wrap"><div id="map"></div></div>
   <div class="results-wrap">
     <div id="results"></div>
     <button class="btn-back" onclick="goBack()">↩ Carica nuovi file</button>
@@ -230,6 +329,11 @@ let IMP = {}, PRZ = [], PROV = [], COM_MAP = {}, CARB = [];
 let PREV = {}, SNAP_DATE = "", HAS_DELTA = false;
 let impText = "", przText = "";
 let selProv = "", selCom = "", selCarb = "", selMode = "all";
+let ALL_COMUNI = [];   // [{com, prov}] per autocomplete
+let FAVS = new Set();  // idImpianto preferiti
+let favFilter = false; // mostra solo preferiti
+let currentView = "list"; // "list" | "map"
+let leafMap = null, leafMarkers = [];
 
 const SNAP_KEY = "carb_snap_v3";
 const LABELS = {
@@ -353,6 +457,13 @@ function elabora() {
   });
 
   PROV = [...pSet].sort();
+  // Costruisce lista piatta comuni per autocomplete
+  ALL_COMUNI = [];
+  PROV.forEach(p => { (COM_MAP[p] || new Set()).forEach(c => ALL_COMUNI.push({com: c, prov: p})); });
+  ALL_COMUNI.sort((a, b) => a.com.localeCompare(b.com, "it"));
+
+  // Carica preferiti
+  try { FAVS = new Set(JSON.parse(localStorage.getItem("carb_favs") || "[]")); } catch { FAVS = new Set(); }
 
   // Carica snapshot precedente
   try {
@@ -385,6 +496,7 @@ function elabora() {
   } catch (e) {}
 
   buildResults();
+  applyURLParams();
 }
 
 // ── COSTRUZIONE UI RISULTATI ──────────────────────────────────────────────────
@@ -416,6 +528,8 @@ function buildResults() {
   // Carburante di default
   selCarb = CARB.find(c => MAIN_CARB.includes(c)) || CARB[0] || "";
   renderCarb();
+  // Mostra chip preferiti se ci sono già preferiti salvati
+  if (FAVS.size > 0) document.getElementById("fav-row").style.display = "block";
 }
 
 // ── CHIP CARBURANTI ───────────────────────────────────────────────────────────
@@ -571,6 +685,8 @@ function updateResults() {
         <div class="rline2">PREZZO MINIMO: ${minP} €/L<span class="rsave">RISPARMI ${sav} €/L</span></div>
       </div>
       <div class="cards">${geoRows.map((r, i) => cardHtml(r, i, true)).join("")}</div>`;
+    pushURL();
+    updateMap(geoRows);
     return;
   }
 
@@ -591,6 +707,7 @@ function updateResults() {
       if (!ids.has(r.idImpianto) || N(r.descCarburante) !== N(selCarb)) return false;
       if (selMode === "self" && r.isSelf !== "1") return false;
       if (selMode === "servito" && r.isSelf !== "0") return false;
+      if (favFilter && !FAVS.has(r.idImpianto)) return false;
       return true;
     })
     .map(r => ({ ...r, ...(IMP[r.idImpianto] || {}), self2: r.isSelf === "1" }))
@@ -625,6 +742,8 @@ function updateResults() {
     </div>
     ${avgNational ? `<div class="avg-banner">📊 Media nazionale ${selCarb}: <b>${avgNational} €/L</b> <span style="color:#6b7280;font-size:.7rem">(su ${allNational.length.toLocaleString("it-IT")} rilevazioni)</span></div>` : ""}
     <div class="cards">${rows5.map((r, i) => cardHtml(r, i, false, avgNational ? parseFloat(avgNational) : null)).join("")}</div>`;
+  pushURL();
+  updateMap(rows5);
 }
 
 // ── CARD HTML ─────────────────────────────────────────────────────────────────
@@ -660,6 +779,7 @@ function cardHtml(r, i, showDist, avgNational = null) {
       <div class="pu">€/litro</div>
       ${r.prevP != null ? `<div class="pp">prec. ${r.prevP.toFixed(3)}</div>` : ""}
     </div>
+    <button class="btn-fav${FAVS.has(r.idImpianto) ? " on" : ""}" onclick="toggleFav('${r.idImpianto}',this)" title="Aggiungi ai preferiti">${FAVS.has(r.idImpianto) ? "⭐" : "☆"}</button>
   </div>`;
 }
 
@@ -708,7 +828,175 @@ async function provaCaricamentoAutomatico() {
   }
 }
 
+// ── URL STATE ─────────────────────────────────────────────────────────────────
+function pushURL() {
+  const p = new URLSearchParams();
+  if (selProv) p.set("prov", selProv);
+  if (selCom)  p.set("com",  selCom);
+  if (selCarb) p.set("carb", selCarb);
+  if (selMode !== "all") p.set("mode", selMode);
+  const s = p.toString();
+  history.replaceState(null, "", s ? "?" + s : location.pathname);
+}
+
+function applyURLParams() {
+  const p = new URLSearchParams(location.search);
+  const prov = (p.get("prov") || "").toUpperCase().trim();
+  const com  = (p.get("com")  || "").toUpperCase().trim();
+  const carb = p.get("carb") || "";
+  const mode = p.get("mode") || "all";
+  if (prov && COM_MAP[prov]) {
+    selProv = prov;
+    if (com && COM_MAP[prov].has(com)) {
+      selCom = com;
+      const label = com.charAt(0) + com.slice(1).toLowerCase();
+      const provLabel = prov.charAt(0) + prov.slice(1).toLowerCase();
+      document.getElementById("ac-input").value = label + " (" + provLabel + ")";
+    }
+  }
+  if (carb && CARB.find(c => N(c) === N(carb))) { selCarb = CARB.find(c => N(c) === N(carb)); renderCarb(); }
+  if (["all","self","servito"].includes(mode)) { selMode = mode; setMode(mode); }
+  if (selProv && selCom) updateResults();
+}
+
+// ── AUTOCOMPLETE COMUNE ───────────────────────────────────────────────────────
+let acFocused = -1;
+
+function onAcInput(val) {
+  acFocused = -1;
+  const q = val.trim().toUpperCase();
+  if (!q || q.length < 2) { closeAc(); return; }
+  const matches = ALL_COMUNI.filter(x => x.com.startsWith(q) || x.com.includes(q)).slice(0, 40);
+  if (!matches.length) { closeAc(); return; }
+  const list = document.getElementById("ac-list");
+  list.innerHTML = matches.map((x, i) =>
+    `<div class="ac-item" data-i="${i}" data-com="${x.com}" data-prov="${x.prov}"
+       onmousedown="pickAc('${x.com}','${x.prov}')">
+       <span>${x.com.charAt(0)+x.com.slice(1).toLowerCase()}</span>
+       <span class="ac-prov">${x.prov.charAt(0)+x.prov.slice(1).toLowerCase()}</span>
+    </div>`
+  ).join("");
+  list.classList.add("open");
+}
+
+function onAcFocus() { if (document.getElementById("ac-input").value.length >= 2) onAcInput(document.getElementById("ac-input").value); }
+
+function onAcKey(e) {
+  const list = document.getElementById("ac-list");
+  const items = list.querySelectorAll(".ac-item");
+  if (!list.classList.contains("open")) return;
+  if (e.key === "ArrowDown") { acFocused = Math.min(acFocused + 1, items.length - 1); highlightAc(items); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { acFocused = Math.max(acFocused - 1, 0); highlightAc(items); e.preventDefault(); }
+  else if (e.key === "Enter" && acFocused >= 0) { items[acFocused].dispatchEvent(new MouseEvent("mousedown")); e.preventDefault(); }
+  else if (e.key === "Escape") { closeAc(); }
+}
+
+function highlightAc(items) {
+  items.forEach((el, i) => el.classList.toggle("focused", i === acFocused));
+  if (acFocused >= 0) items[acFocused].scrollIntoView({block:"nearest"});
+}
+
+function pickAc(com, prov) {
+  selProv = prov; selCom = com;
+  const label = com.charAt(0) + com.slice(1).toLowerCase();
+  const provLabel = prov.charAt(0) + prov.slice(1).toLowerCase();
+  document.getElementById("ac-input").value = label + " (" + provLabel + ")";
+  closeAc();
+  updateResults();
+}
+
+function closeAc() { document.getElementById("ac-list").classList.remove("open"); }
+document.addEventListener("click", e => { if (!e.target.closest(".ac-wrap")) closeAc(); });
+
+// ── VISTA LISTA / MAPPA ───────────────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  document.getElementById("vt-list").classList.toggle("on", v === "list");
+  document.getElementById("vt-map").classList.toggle("on", v === "map");
+  document.getElementById("map-wrap").classList.toggle("show", v === "map");
+  document.querySelector(".results-wrap").style.display = v === "list" ? "block" : "none";
+  if (v === "map") {
+    if (!leafMap) initMap();
+    setTimeout(() => leafMap.invalidateSize(), 100);
+  }
+}
+
+function initMap() {
+  leafMap = L.map("map", { zoomControl: true });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(leafMap);
+  leafMap.setView([41.9, 12.5], 6);
+}
+
+function updateMap(rows) {
+  if (!leafMap) return;
+  leafMarkers.forEach(m => m.remove());
+  leafMarkers = [];
+  if (!rows || !rows.length) return;
+
+  const valid = rows.filter(r => {
+    const imp = IMP[r.idImpianto] || r;
+    return parseFloat(imp.Latitudine) && parseFloat(imp.Longitudine);
+  });
+  if (!valid.length) return;
+
+  const bounds = [];
+  valid.forEach((r, i) => {
+    const imp = IMP[r.idImpianto] || r;
+    const lat = parseFloat(imp.Latitudine), lon = parseFloat(imp.Longitudine);
+    const name = imp["Nome Impianto"] || imp.gestoreImpianto || imp.Bandiera || "Distributore";
+    const addr = [imp.Indirizzo, imp.Comune].filter(Boolean).join(", ");
+    const isSelf = r.self2 || r.isSelf === "1";
+    const color = i === 0 ? "#f59e0b" : "#4b5563";
+    const icon = L.divIcon({
+      className: "",
+      html: `<div style="background:${color};color:#000;font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)">${r.price.toFixed(3)}</div>`,
+      iconAnchor: [20, 10]
+    });
+    const marker = L.marker([lat, lon], { icon }).addTo(leafMap);
+    marker.bindPopup(`
+      <div class="lp-name">${name}</div>
+      <div class="lp-addr">${addr}</div>
+      <div class="lp-price">${r.price.toFixed(3)} <span class="lp-unit">€/litro</span></div>
+      <div class="lp-tags">
+        <span style="font-size:.68rem;background:rgba(245,158,11,.2);color:#f59e0b;padding:.1rem .35rem;border-radius:2px">${isSelf ? "Self" : "Servito"}</span>
+        ${imp.Bandiera ? `<span style="font-size:.68rem;background:rgba(100,116,139,.2);color:#94a3b8;padding:.1rem .35rem;border-radius:2px">${imp.Bandiera}</span>` : ""}
+        ${i === 0 ? `<span style="font-size:.68rem;background:rgba(245,158,11,.15);color:#fbbf24;padding:.1rem .35rem;border-radius:2px">★ PIÙ ECONOMICO</span>` : ""}
+      </div>
+    `, { maxWidth: 240 });
+    leafMarkers.push(marker);
+    bounds.push([lat, lon]);
+  });
+  if (bounds.length) leafMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+}
+
+// ── PREFERITI ─────────────────────────────────────────────────────────────────
+const FAV_KEY = "carb_favs";
+
+function saveFavs() {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify([...FAVS])); } catch {}
+}
+
+function toggleFav(id, btn) {
+  if (FAVS.has(id)) { FAVS.delete(id); btn.textContent = "☆"; btn.classList.remove("on"); }
+  else              { FAVS.add(id);    btn.textContent = "⭐"; btn.classList.add("on"); }
+  saveFavs();
+  // Mostra/nascondi il chip preferiti
+  document.getElementById("fav-row").style.display = FAVS.size > 0 ? "block" : "none";
+}
+
+function toggleFavFilter() {
+  favFilter = !favFilter;
+  document.getElementById("chip-fav").classList.toggle("on", favFilter);
+  updateResults();
+}
+
+// Aggiorna filtraggio per preferiti in updateResults
+
 window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
