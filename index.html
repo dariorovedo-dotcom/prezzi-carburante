@@ -627,6 +627,9 @@ function toggleGeo() {
       geoMode = true;
       btn.textContent = "📍 Vicino a te — attivo"; btn.classList.add("active"); btn.disabled = false;
       document.getElementById("geo-row").classList.add("show");
+      // Svuota la ricerca per comune per evitare confusione
+      document.getElementById("ac-input").value = "";
+      selProv = ""; selCom = "";
       updateResults();
     },
     () => {
@@ -902,7 +905,9 @@ function pickAc(com, prov) {
   const provLabel = prov.charAt(0) + prov.slice(1).toLowerCase();
   document.getElementById("ac-input").value = label + " (" + provLabel + ")";
   closeAc();
-  updateResults();
+  // Se geo è attivo, disattivalo: l'utente ha scelto un comune specifico
+  if (geoMode) clearGeo();
+  else updateResults();
 }
 
 function closeAc() { document.getElementById("ac-list").classList.remove("open"); }
