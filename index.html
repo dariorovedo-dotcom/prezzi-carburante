@@ -134,7 +134,13 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 .lp-unit { font-size:.65rem; color:#6b7280; }
 .lp-tags { display:flex; gap:.3rem; margin-top:.4rem; flex-wrap:wrap; }
 
-/* ── PREFERITI ── */
+/* ── GRAFICO STORICO ── */
+.chart-wrap { margin:0 2rem 1.2rem; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.07); border-radius:6px; padding:1rem 1.2rem; display:none; }
+.chart-wrap.show { display:block; }
+.chart-title { font-size:.65rem; text-transform:uppercase; letter-spacing:.1em; color:#6b7280; margin-bottom:.7rem; display:flex; justify-content:space-between; align-items:center; }
+.chart-title b { color:#9ca3af; }
+.chart-canvas { width:100%; height:90px; display:block; }
+.chart-labels { display:flex; justify-content:space-between; margin-top:.3rem; font-size:.58rem; color:#4b5563; }
 .btn-fav { background:none; border:none; cursor:pointer; font-size:1rem; padding:.1rem .2rem; line-height:1; transition:transform .15s; opacity:.4; flex-shrink:0; align-self:flex-start; }
 .btn-fav:hover { transform:scale(1.2); opacity:.8; }
 .btn-fav.on { opacity:1; }
@@ -257,6 +263,11 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 <div id="screen-results">
   <div class="status-bar"><div class="dot"></div><span id="status-txt"></span></div>
   <div id="delta-box"></div>
+  <div class="chart-wrap" id="chart-wrap">
+    <div class="chart-title"><span>📈 Andamento prezzo medio — <b id="chart-label">—</b></span><span id="chart-days" style="color:#4b5563"></span></div>
+    <canvas class="chart-canvas" id="chart-canvas"></canvas>
+    <div class="chart-labels" id="chart-labels"></div>
+  </div>
   <div class="search">
     <div>
       <button class="btn-geo" id="btn-geo" onclick="toggleGeo()">📍 Trovami i distributori più vicini</button>
@@ -267,23 +278,16 @@ select:disabled { opacity:.35; cursor:not-allowed; }
         <button class="geo-clear" onclick="clearGeo()">✕ Disattiva</button>
       </div>
     </div>
-    <div class="row2">
-      <div class="fg">
-        <label class="fl">Provincia</label>
-        <select id="sel-prov" onchange="onProv()" style="display:none"><option value="">Seleziona...</option></select>
-      </div>
-      <div class="fg">
-        <label class="fl">Comune</label>
-        <select id="sel-com" disabled onchange="onCom()" style="display:none"><option value="">Prima seleziona provincia</option></select>
-      </div>
-    </div>
     <div class="fg">
-      <label class="fl">Cerca comune o provincia</label>
+      <label class="fl">Cerca comune</label>
       <div class="ac-wrap">
         <input type="text" id="ac-input" placeholder="Es: Trieste, Milano, Roma…" autocomplete="off" oninput="onAcInput(this.value)" onkeydown="onAcKey(event)" onfocus="onAcFocus()">
         <div class="ac-list" id="ac-list"></div>
       </div>
     </div>
+    <!-- Hidden selects mantenuti per compatibilità JS -->
+    <select id="sel-prov" onchange="onProv()" style="display:none"><option value="">Seleziona...</option></select>
+    <select id="sel-com" disabled onchange="onCom()" style="display:none"><option value="">Prima seleziona provincia</option></select>
     <div class="fg">
       <label class="fl">Carburante</label>
       <div class="chips" id="chips"></div>
@@ -468,7 +472,7 @@ function elabora() {
   // Carica preferiti
   try { FAVS = new Set(JSON.parse(localStorage.getItem("carb_favs") || "[]")); } catch { FAVS = new Set(); }
 
-  // Carica snapshot precedente
+  // Carica snapshot precedente (per delta ▲▼)
   try {
     const snap = JSON.parse(localStorage.getItem(SNAP_KEY) || "null");
     if (snap && snap.data) { PREV = snap.data; SNAP_DATE = snap.date; HAS_DELTA = true; }
@@ -485,7 +489,7 @@ function elabora() {
 
   CARB = [...new Set(PRZ.map(r => r.descCarburante).filter(Boolean))].sort();
 
-  // Salva snapshot corrente
+  // Salva snapshot corrente (per delta)
   try {
     const snapData = {};
     PRZ.forEach(r => {
@@ -496,6 +500,31 @@ function elabora() {
       date: new Date().toLocaleDateString("it-IT"),
       data: snapData
     }));
+  } catch (e) {}
+
+  // Salva storico prezzi medi per comune (max 30 giorni)
+  const today = new Date().toISOString().slice(0, 10);
+  const HIST_KEY = "carb_history_v1";
+  try {
+    const hist = JSON.parse(localStorage.getItem(HIST_KEY) || "{}");
+    // Calcola media per ogni combinazione comune+carburante
+    const sums = {}, counts = {};
+    PRZ.forEach(r => {
+      const imp = IMP[r.idImpianto];
+      if (!imp) return;
+      const key = N(imp.Comune) + "|" + N(imp.Provincia) + "|" + N(r.descCarburante);
+      if (!sums[key]) { sums[key] = 0; counts[key] = 0; }
+      sums[key] += r.price; counts[key]++;
+    });
+    Object.entries(sums).forEach(([key, sum]) => {
+      if (!hist[key]) hist[key] = [];
+      // Rimuovi entry di oggi se già presente, poi aggiungi
+      hist[key] = hist[key].filter(e => e.d !== today);
+      hist[key].push({ d: today, p: +(sum / counts[key]).toFixed(3) });
+      // Mantieni max 30 giorni
+      hist[key] = hist[key].sort((a, b) => a.d.localeCompare(b.d)).slice(-30);
+    });
+    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
   } catch (e) {}
 
   buildResults();
@@ -699,7 +728,7 @@ function updateResults() {
 
   // — MODALITÀ NORMALE —
   if (!selCom || !selCarb) {
-    area.innerHTML = `<div class="empty">${!selProv ? "⬆ Seleziona una provincia" : !selCom ? "Seleziona il comune" : "Seleziona il carburante"}</div>`;
+    area.innerHTML = `<div class="empty">Cerca un comune per vedere i prezzi</div>`;
     return;
   }
 
@@ -752,6 +781,7 @@ function updateResults() {
   pushURL();
   lastRows = rows5;
   updateMap(rows5);
+  renderChart();
 }
 
 // ── CARD HTML ─────────────────────────────────────────────────────────────────
@@ -836,6 +866,87 @@ async function provaCaricamentoAutomatico() {
   }
 }
 
+// ── GRAFICO STORICO ───────────────────────────────────────────────────────────
+function renderChart() {
+  const wrap = document.getElementById("chart-wrap");
+  if (!selCom || !selProv || !selCarb) { wrap.classList.remove("show"); return; }
+
+  const HIST_KEY = "carb_history_v1";
+  let hist = {};
+  try { hist = JSON.parse(localStorage.getItem(HIST_KEY) || "{}"); } catch {}
+
+  const key = selCom + "|" + selProv + "|" + N(selCarb);
+  const entries = (hist[key] || []).sort((a, b) => a.d.localeCompare(b.d));
+
+  if (entries.length < 2) { wrap.classList.remove("show"); return; }
+
+  wrap.classList.add("show");
+  document.getElementById("chart-label").textContent = selCarb + " – " + selCom.charAt(0) + selCom.slice(1).toLowerCase();
+  document.getElementById("chart-days").textContent = entries.length + " giorni";
+
+  const canvas = document.getElementById("chart-canvas");
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || canvas.parentElement.clientWidth - 40;
+  const H = 90;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const prices = entries.map(e => e.p);
+  const minP = Math.min(...prices), maxP = Math.max(...prices);
+  const range = maxP - minP || 0.01;
+  const pad = { t: 12, b: 4, l: 8, r: 8 };
+  const gW = W - pad.l - pad.r, gH = H - pad.t - pad.b;
+
+  const xOf = i => pad.l + (i / (entries.length - 1)) * gW;
+  const yOf = p => pad.t + (1 - (p - minP) / range) * gH;
+
+  // Area riempimento
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(prices[0]));
+  prices.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
+  ctx.lineTo(xOf(prices.length - 1), H - pad.b);
+  ctx.lineTo(xOf(0), H - pad.b);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.t, 0, H);
+  grad.addColorStop(0, "rgba(245,158,11,.25)");
+  grad.addColorStop(1, "rgba(245,158,11,.02)");
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Linea
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(prices[0]));
+  prices.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
+  ctx.strokeStyle = "#f59e0b";
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
+  ctx.stroke();
+
+  // Punti + etichette min/max
+  prices.forEach((p, i) => {
+    const isMin = p === minP, isMax = p === maxP;
+    ctx.beginPath();
+    ctx.arc(xOf(i), yOf(p), isMin || isMax ? 4 : 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = isMin ? "#4ade80" : isMax ? "#f87171" : "#f59e0b";
+    ctx.fill();
+    if (isMin || isMax) {
+      ctx.font = "bold 9px 'DM Sans',sans-serif";
+      ctx.fillStyle = isMin ? "#4ade80" : "#f87171";
+      ctx.textAlign = "center";
+      ctx.fillText(p.toFixed(3), xOf(i), yOf(p) + (isMin ? 11 : -4));
+    }
+  });
+
+  // Etichette date (prima e ultima)
+  const labelsEl = document.getElementById("chart-labels");
+  const fmt = d => d.slice(5).replace("-", "/");
+  labelsEl.innerHTML = `<span>${fmt(entries[0].d)}</span><span>${fmt(entries[entries.length-1].d)}</span>`;
+}
+
 // ── URL STATE ─────────────────────────────────────────────────────────────────
 function pushURL() {
   const p = new URLSearchParams();
@@ -857,9 +968,7 @@ function applyURLParams() {
     selProv = prov;
     if (com && COM_MAP[prov].has(com)) {
       selCom = com;
-      const label = com.charAt(0) + com.slice(1).toLowerCase();
-      const provLabel = prov.charAt(0) + prov.slice(1).toLowerCase();
-      document.getElementById("ac-input").value = label + " (" + provLabel + ")";
+      document.getElementById("ac-input").value = label + " (" + prov.toUpperCase() + ")";
     }
   }
   if (carb && CARB.find(c => N(c) === N(carb))) { selCarb = CARB.find(c => N(c) === N(carb)); renderCarb(); }
@@ -889,7 +998,7 @@ function onAcInput(val) {
     `<div class="ac-item" data-i="${i}" data-com="${x.com}" data-prov="${x.prov}"
        onmousedown="pickAc('${x.com}','${x.prov}')">
        <span>${x.com.charAt(0)+x.com.slice(1).toLowerCase()}</span>
-       <span class="ac-prov">${x.prov.charAt(0)+x.prov.slice(1).toLowerCase()}</span>
+       <span class="ac-prov">${x.prov.toUpperCase()}</span>
     </div>`
   ).join("");
   list.classList.add("open");
@@ -915,8 +1024,7 @@ function highlightAc(items) {
 function pickAc(com, prov) {
   selProv = prov; selCom = com;
   const label = com.charAt(0) + com.slice(1).toLowerCase();
-  const provLabel = prov.charAt(0) + prov.slice(1).toLowerCase();
-  document.getElementById("ac-input").value = label + " (" + provLabel + ")";
+  document.getElementById("ac-input").value = label + " (" + prov.toUpperCase() + ")";
   closeAc();
   // Se geo è attivo, disattivalo: l'utente ha scelto un comune specifico
   if (geoMode) clearGeo();
@@ -1032,6 +1140,7 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 </script>
 </body>
 </html>
+
 
 
 
