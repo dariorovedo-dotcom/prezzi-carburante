@@ -29,6 +29,9 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const url = e.request.url;
 
+  // Ignora richieste non-http (es. chrome-extension://)
+  if (!url.startsWith("http")) return;
+
   // CSV dati: sempre dalla rete (aggiornati ogni mattina)
   if (url.endsWith(".csv")) {
     e.respondWith(
@@ -42,14 +45,15 @@ self.addEventListener("fetch", e => {
     caches.match(e.request).then(cached => {
       if (cached) return cached;
       return fetch(e.request).then(response => {
-        // Salva in cache solo risposte valide
-        if (response && response.status === 200 && response.type !== "opaque") {
+        // Salva in cache solo risposte valide e stessa origine o CDN
+        if (response && response.status === 200 && response.type === "basic" || 
+            response && response.status === 200 && url.includes("cdnjs.cloudflare.com") ||
+            response && response.status === 200 && url.includes("fonts.googleapis.com")) {
           const clone = response.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return response;
       }).catch(() => {
-        // Offline fallback per navigazione
         if (e.request.mode === "navigate") {
           return caches.match("/prezzi-carburante/index.html");
         }
