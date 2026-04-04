@@ -1,0 +1,41 @@
+{
+  "name": "Prezzi Carburante Italia",
+  "short_name": "Carburante",
+  "description": "Prezzi benzina, diesel, GPL e metano in Italia. Dati ufficiali MIMIT aggiornati ogni mattina.",
+  "start_url": "/prezzi-carburante/",
+  "scope": "/prezzi-carburante/",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait-primary",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "finance"],
+  "shortcuts": [
+    {
+      "name": "Cerca comune",
+      "short_name": "Cerca",
+      "url": "/prezzi-carburante/",
+      "description": "Cerca prezzi per comune"
+    }
+  ]
+}
