@@ -4,16 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<!-- Tag di Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JZVM4KPM7V"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-JZVM4KPM7V');
-</script>
+<!-- Cloudflare Web Analytics (cookieless, GDPR-friendly) -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+  data-cf-beacon='{"token": "7e05ba2225064bcd86c5ad88ceaf8e5d"}'></script>
+<!-- End Cloudflare Web Analytics -->
 
-<title>Prezzi Carburante Italia</title>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#f59e0b"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -31,6 +26,23 @@ body { background:#0a0c10; color:#e8e0d0; font-family:'DM Sans',sans-serif; min-
 
 /* ── SCHERMATA INIZIALE ── */
 #screen-load { padding:2.5rem 2rem; max-width:560px; }
+.fallback-notice {
+  display:none;
+  background:rgba(248,113,113,.08);
+  border:1px solid rgba(248,113,113,.25);
+  border-left:3px solid #f87171;
+  border-radius:6px;
+  padding:1rem 1.2rem;
+  margin-bottom:1.5rem;
+  font-size:.85rem;
+  line-height:1.6;
+  color:#fca5a5;
+}
+.fallback-notice.show { display:block; }
+.fallback-notice b { color:#fff; }
+.fallback-notice .fb-title { font-weight:700; margin-bottom:.3rem; display:flex; align-items:center; gap:.5rem; }
+.fallback-notice .fb-retry { display:inline-block; margin-top:.7rem; background:rgba(248,113,113,.15); border:1px solid rgba(248,113,113,.3); color:#fca5a5; padding:.4rem .9rem; border-radius:4px; font-size:.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
+.fallback-notice .fb-retry:hover { background:rgba(248,113,113,.25); color:#fff; }
 .how { background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.18); border-radius:8px; padding:1.4rem 1.6rem; margin-bottom:1.8rem; font-size:.88rem; line-height:2; color:#d1c9b8; }
 .how a { color:#f59e0b; font-weight:600; }
 .how b { color:#fff; }
@@ -113,16 +125,90 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 .empty { text-align:center; padding:2.5rem; color:#4b5563; font-size:.85rem; line-height:1.8; }
 .btn-back { background:none; border:1px solid rgba(255,255,255,.1); color:#6b7280; padding:.38rem .9rem; font-size:.72rem; border-radius:3px; cursor:pointer; transition:all .2s; }
 .btn-back:hover { border-color:rgba(245,158,11,.3); color:#f59e0b; }
-.btn-geo { width:100%; background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.25); color:#818cf8; padding:.65rem 1rem; font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:600; border-radius:4px; cursor:pointer; transition:all .2s; margin-bottom:.6rem; }
-.btn-geo:hover { background:rgba(99,102,241,.2); }
-.btn-geo.active { background:rgba(99,102,241,.2); border-color:#818cf8; color:#a5b4fc; }
 .geo-row { display:none; align-items:center; gap:.7rem; font-size:.75rem; color:#6b7280; margin-bottom:.8rem; flex-wrap:wrap; }
 .geo-row.show { display:flex; }
 .geo-row input[type=range] { width:100px; accent-color:#818cf8; }
+
+/* ── HERO GEO CTA (pulsante principale in alto) ── */
+.hero-geo-wrap { padding:1.5rem 2rem 0; }
+.hero-geo {
+  width:100%; background:linear-gradient(135deg,#f59e0b 0%,#fbbf24 100%);
+  border:none; color:#0a0c10; padding:1.4rem 1.5rem;
+  font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.08em;
+  border-radius:8px; cursor:pointer; transition:all .25s;
+  box-shadow:0 4px 24px rgba(245,158,11,.25); position:relative;
+  display:flex; align-items:center; justify-content:center; gap:.8rem;
+}
+.hero-geo:hover { transform:translateY(-2px); box-shadow:0 6px 30px rgba(245,158,11,.4); }
+.hero-geo:active { transform:translateY(0); }
+.hero-geo.busy { opacity:.7; cursor:wait; transform:none; }
+.hero-geo.active { background:linear-gradient(135deg,#4ade80 0%,#22c55e 100%); box-shadow:0 4px 24px rgba(74,222,128,.25); }
+.hero-geo-icon { font-size:1.6rem; }
+.hero-geo-sub { font-family:'DM Sans',sans-serif; font-size:.7rem; letter-spacing:.05em; color:rgba(10,12,16,.7); text-transform:uppercase; margin-top:.2rem; font-weight:600; }
+.hero-geo-content { display:flex; flex-direction:column; align-items:center; line-height:1.1; }
+@media(max-width:480px){ .hero-geo-wrap { padding:1rem 1rem 0; } .hero-geo { padding:1.2rem 1rem; font-size:1.2rem; } }
+.or-divider { text-align:center; margin:1.2rem 2rem .2rem; color:#4b5563; font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; position:relative; }
+.or-divider::before, .or-divider::after { content:""; position:absolute; top:50%; width:35%; height:1px; background:rgba(255,255,255,.08); }
+.or-divider::before { left:2rem; }
+.or-divider::after { right:2rem; }
+@media(max-width:480px){ .or-divider::before { left:1rem; } .or-divider::after { right:1rem; } }
 .geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 .dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
 .avg-banner { background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15); border-radius:4px; padding:.45rem 1rem; margin-bottom:.8rem; font-size:.75rem; color:#818cf8; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
 .avg-banner b { color:#a5b4fc; }
+
+/* ── CALCOLATORE COSTO PIENO ── */
+.fill-calc {
+  background:linear-gradient(135deg, rgba(245,158,11,.08) 0%, rgba(245,158,11,.04) 100%);
+  border:1px solid rgba(245,158,11,.25);
+  border-radius:6px;
+  padding:1rem 1.2rem;
+  margin-bottom:1rem;
+}
+.fill-calc-head {
+  display:flex; align-items:center; justify-content:space-between;
+  font-family:'Bebas Neue',sans-serif; font-size:.95rem;
+  letter-spacing:.08em; color:#fbbf24; margin-bottom:.7rem;
+}
+.fill-calc-toggle { background:none; border:none; color:#9ca3af; font-size:.85rem; cursor:pointer; padding:.2rem .5rem; }
+.fill-calc-toggle:hover { color:#f59e0b; }
+.fill-calc-body { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; }
+.fill-calc-input-wrap {
+  display:flex; align-items:center; gap:.4rem;
+  background:rgba(0,0,0,.25); border:1px solid rgba(245,158,11,.2);
+  border-radius:4px; padding:.2rem .6rem;
+}
+.fill-calc-input {
+  background:transparent; border:none; color:#fff;
+  font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600;
+  width:55px; text-align:center; padding:.3rem 0;
+}
+.fill-calc-input:focus { outline:none; }
+.fill-calc-input::-webkit-inner-spin-button, .fill-calc-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+.fill-calc-unit { font-size:.7rem; color:#9ca3af; }
+.fill-calc-presets { display:flex; gap:.3rem; flex-wrap:wrap; }
+.fill-calc-preset {
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  color:#9ca3af; padding:.25rem .55rem; font-size:.72rem;
+  cursor:pointer; border-radius:3px; transition:all .15s;
+  font-family:'DM Sans',sans-serif;
+}
+.fill-calc-preset:hover { border-color:rgba(245,158,11,.4); color:#fbbf24; }
+.fill-calc-preset.on { background:rgba(245,158,11,.15); border-color:rgba(245,158,11,.5); color:#fbbf24; }
+.fill-calc-result {
+  margin-top:.7rem; padding-top:.7rem;
+  border-top:1px solid rgba(245,158,11,.15);
+  display:flex; gap:1rem; flex-wrap:wrap; align-items:baseline;
+}
+.fill-calc-cost { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#fbbf24; line-height:1; }
+.fill-calc-cost-lbl { font-size:.7rem; color:#9ca3af; text-transform:uppercase; letter-spacing:.1em; }
+.fill-calc-saving { font-size:.85rem; color:#86efac; font-weight:600; }
+.fill-calc-saving.zero { color:#6b7280; font-weight:400; }
+.fill-calc-body.hidden, .fill-calc-result.hidden { display:none; }
+@media(max-width:480px){
+  .fill-calc-body { flex-direction:column; align-items:stretch; }
+  .fill-calc-presets { justify-content:center; }
+}
 .tag-avg { background:rgba(99,102,241,.15); color:#818cf8; border:1px solid rgba(99,102,241,.25); font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; padding:.1rem .38rem; border-radius:2px; font-weight:700; }
 .chip-alt { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#d97706; }
 
@@ -188,13 +274,10 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 }
 </style>
 <!-- ============================================================
-     SEO META TAGS — copia tutto questo blocco e incollalo
-     nell'<head> del tuo index.html, prima del </head>
+     SEO META TAGS
      ============================================================ -->
 
 <!-- Titolo e descrizione base -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prezzi Carburante Italia – Trova il distributore più vicino | Dati MIMIT</title>
 <meta name="description" content="Consulta i prezzi di benzina, diesel, GPL e metano in tutta Italia. Dati ufficiali del Ministero delle Imprese aggiornati ogni mattina alle 8:00. Trova il distributore più economico vicino a te.">
 <meta name="keywords" content="prezzi carburante, benzina economica, diesel prezzo, GPL metano, distributori vicino a me, prezzi benzina oggi, carburante Italia, MIMIT open data">
@@ -258,6 +341,11 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 
 <!-- SCHERMATA CARICAMENTO MANUALE -->
 <div id="screen-load">
+  <div class="fallback-notice" id="fallback-notice">
+    <div class="fb-title">⚠️ Caricamento automatico non riuscito</div>
+    Non sono riuscito a scaricare i dati direttamente. Puoi caricare i file manualmente seguendo i 3 passi qui sotto, oppure riprovare.
+    <button class="fb-retry" onclick="provaCaricamentoAutomatico()">↻ Riprova caricamento automatico</button>
+  </div>
   <div class="how">
     <div><span class="step-num">1</span> Vai su <a href="https://www.mimit.gov.it/it/open-data/elenco-dataset/carburanti-prezzi-praticati-e-anagrafica-degli-impianti" target="_blank">mimit.gov.it → Open Data → Carburanti ↗</a></div>
     <div><span class="step-num">2</span> Scarica <b>anagrafica_impianti_attivi.csv</b> e <b>prezzo_alle_8.csv</b></div>
@@ -278,21 +366,32 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 <div id="screen-results">
   <div class="status-bar"><div class="dot"></div><span id="status-txt"></span></div>
   <div id="delta-box"></div>
+
+  <!-- HERO GEO CTA — Pulsante principale -->
+  <div class="hero-geo-wrap">
+    <button class="hero-geo" id="hero-geo" onclick="toggleGeo()">
+      <span class="hero-geo-icon">📍</span>
+      <span class="hero-geo-content">
+        <span>TROVA I PIÙ VICINI A TE</span>
+        <span class="hero-geo-sub">Usa la tua posizione</span>
+      </span>
+    </button>
+    <div class="geo-row" id="geo-row">
+      <span>Raggio:</span>
+      <input type="range" id="geo-km" min="1" max="30" value="5" oninput="onGeoKm(this.value)">
+      <span id="geo-km-lbl">5 km</span>
+      <button class="geo-clear" onclick="clearGeo()">✕ Disattiva</button>
+    </div>
+  </div>
+
+  <div class="or-divider">oppure cerca un comune</div>
+
   <div class="chart-wrap" id="chart-wrap">
     <div class="chart-title"><span>📈 Andamento prezzo medio — <b id="chart-label">—</b></span><span id="chart-days" style="color:#4b5563"></span></div>
     <canvas class="chart-canvas" id="chart-canvas"></canvas>
     <div class="chart-labels" id="chart-labels"></div>
   </div>
   <div class="search">
-    <div>
-      <button class="btn-geo" id="btn-geo" onclick="toggleGeo()">📍 Trovami i distributori più vicini</button>
-      <div class="geo-row" id="geo-row">
-        <span>Raggio:</span>
-        <input type="range" id="geo-km" min="1" max="30" value="5" oninput="onGeoKm(this.value)">
-        <span id="geo-km-lbl">5 km</span>
-        <button class="geo-clear" onclick="clearGeo()">✕ Disattiva</button>
-      </div>
-    </div>
     <div class="fg">
       <label class="fl">Cerca comune</label>
       <div class="ac-wrap">
@@ -666,13 +765,17 @@ function haversine(lat1, lon1, lat2, lon2) {
 function toggleGeo() {
   if (geoMode) { clearGeo(); return; }
   if (!navigator.geolocation) { alert("Il tuo browser non supporta la geolocalizzazione."); return; }
-  const btn = document.getElementById("btn-geo");
-  btn.textContent = "📍 Ricerca posizione..."; btn.disabled = true;
+  const btn = document.getElementById("hero-geo");
+  const content = btn.querySelector(".hero-geo-content");
+  const originalHTML = content.innerHTML;
+  content.innerHTML = '<span>RICERCA POSIZIONE…</span><span class="hero-geo-sub">Un attimo di pazienza</span>';
+  btn.classList.add("busy"); btn.disabled = true;
   navigator.geolocation.getCurrentPosition(
     pos => {
       userLat = pos.coords.latitude; userLon = pos.coords.longitude;
       geoMode = true;
-      btn.textContent = "📍 Vicino a te — attivo"; btn.classList.add("active"); btn.disabled = false;
+      content.innerHTML = '<span>📍 RICERCA ATTIVA</span><span class="hero-geo-sub">Tocca per disattivare</span>';
+      btn.classList.remove("busy"); btn.classList.add("active"); btn.disabled = false;
       document.getElementById("geo-row").classList.add("show");
       // Svuota la ricerca per comune per evitare confusione
       document.getElementById("ac-input").value = "";
@@ -680,7 +783,8 @@ function toggleGeo() {
       updateResults();
     },
     () => {
-      btn.textContent = "📍 Trovami i distributori più vicini"; btn.disabled = false;
+      content.innerHTML = originalHTML;
+      btn.classList.remove("busy"); btn.disabled = false;
       alert("Impossibile ottenere la posizione. Controlla i permessi del browser.");
     }
   );
@@ -688,8 +792,10 @@ function toggleGeo() {
 
 function clearGeo() {
   geoMode = false; userLat = null; userLon = null;
-  const btn = document.getElementById("btn-geo");
-  btn.textContent = "📍 Trovami i distributori più vicini"; btn.classList.remove("active");
+  const btn = document.getElementById("hero-geo");
+  const content = btn.querySelector(".hero-geo-content");
+  content.innerHTML = '<span>TROVA I PIÙ VICINI A TE</span><span class="hero-geo-sub">Usa la tua posizione</span>';
+  btn.classList.remove("active");
   document.getElementById("geo-row").classList.remove("show");
   updateResults();
 }
@@ -728,16 +834,19 @@ function updateResults() {
       return;
     }
     const minP = geoRows[0].price.toFixed(3);
-    const sav = geoRows.length > 1 ? (geoRows[geoRows.length - 1].price - geoRows[0].price).toFixed(3) : "0.000";
+    const maxP = geoRows[geoRows.length - 1].price;
+    const sav = geoRows.length > 1 ? (maxP - geoRows[0].price).toFixed(3) : "0.000";
     area.innerHTML = `
       <div class="rtitle">
         <div class="rline1">${selCarb.toUpperCase()} – entro ${geoKm} km<span class="rtop">TOP ${geoRows.length}</span></div>
         <div class="rline2">PREZZO MINIMO: ${minP} €/L<span class="rsave">RISPARMI ${sav} €/L</span></div>
       </div>
+      ${fillCalcHtml(geoRows[0].price, maxP)}
       <div class="cards">${geoRows.map((r, i) => cardHtml(r, i, true)).join("")}</div>`;
   pushURL();
   lastRows = geoRows;
   updateMap(geoRows);
+  initFillCalc(geoRows[0].price, maxP);
     return;
   }
 
@@ -792,11 +901,114 @@ function updateResults() {
       </div>
     </div>
     ${avgNational ? `<div class="avg-banner">📊 Media nazionale ${selCarb}: <b>${avgNational} €/L</b> <span style="color:#6b7280;font-size:.7rem">(su ${allNational.length.toLocaleString("it-IT")} rilevazioni)</span></div>` : ""}
+    ${fillCalcHtml(rows5[0].price, rows5[rows5.length - 1].price)}
     <div class="cards">${rows5.map((r, i) => cardHtml(r, i, false, avgNational ? parseFloat(avgNational) : null)).join("")}</div>`;
   pushURL();
   lastRows = rows5;
   updateMap(rows5);
   renderChart();
+  initFillCalc(rows5[0].price, rows5[rows5.length - 1].price);
+}
+
+// ── CALCOLATORE COSTO PIENO ───────────────────────────────────────────────────
+// Memorizza l'ultima capienza usata, default 50L (utilitaria)
+function getSavedTankSize() {
+  try { return parseInt(localStorage.getItem("carb_tank_size") || "50", 10) || 50; }
+  catch { return 50; }
+}
+function saveTankSize(v) {
+  try { localStorage.setItem("carb_tank_size", String(v)); } catch {}
+}
+
+// Renderizza il box del calcolatore. minPrice = prezzo più basso, maxPrice = più alto (per calcolo risparmio).
+function fillCalcHtml(minPrice, maxPrice) {
+  const tank = getSavedTankSize();
+  return `
+    <div class="fill-calc" id="fill-calc-box" data-min="${minPrice}" data-max="${maxPrice}">
+      <div class="fill-calc-head">
+        <span>💰 Quanto ti costa il pieno?</span>
+        <button class="fill-calc-toggle" id="fill-calc-toggle" onclick="toggleFillCalc()" title="Mostra/nascondi">−</button>
+      </div>
+      <div class="fill-calc-body" id="fill-calc-body">
+        <div class="fill-calc-input-wrap">
+          <input type="number" class="fill-calc-input" id="fill-calc-input" value="${tank}" min="1" max="200" oninput="onFillCalcInput()">
+          <span class="fill-calc-unit">litri</span>
+        </div>
+        <div class="fill-calc-presets" id="fill-calc-presets">
+          <button class="fill-calc-preset" data-v="35" onclick="setFillCalc(35)">🛵 35</button>
+          <button class="fill-calc-preset" data-v="50" onclick="setFillCalc(50)">🚗 50</button>
+          <button class="fill-calc-preset" data-v="65" onclick="setFillCalc(65)">🚙 65</button>
+          <button class="fill-calc-preset" data-v="80" onclick="setFillCalc(80)">🚐 80</button>
+        </div>
+      </div>
+      <div class="fill-calc-result" id="fill-calc-result">
+        <div>
+          <div class="fill-calc-cost"><span id="fill-calc-cost-val">—</span> €</div>
+          <div class="fill-calc-cost-lbl">Pieno al prezzo migliore</div>
+        </div>
+        <div class="fill-calc-saving" id="fill-calc-saving"></div>
+      </div>
+    </div>`;
+}
+
+// Aggiorna il preset selezionato e ricalcola
+function setFillCalc(v) {
+  const input = document.getElementById("fill-calc-input");
+  if (!input) return;
+  input.value = v;
+  onFillCalcInput();
+}
+
+// Toggle apri/chiudi
+function toggleFillCalc() {
+  const body = document.getElementById("fill-calc-body");
+  const result = document.getElementById("fill-calc-result");
+  const tog = document.getElementById("fill-calc-toggle");
+  if (!body || !result || !tog) return;
+  const isHidden = body.classList.toggle("hidden");
+  result.classList.toggle("hidden", isHidden);
+  tog.textContent = isHidden ? "+" : "−";
+}
+
+// Ricalcola i valori al cambio di input
+function onFillCalcInput() {
+  const box = document.getElementById("fill-calc-box");
+  const input = document.getElementById("fill-calc-input");
+  if (!box || !input) return;
+
+  let litri = parseFloat(input.value);
+  if (!litri || litri < 1) litri = 1;
+  if (litri > 200) { litri = 200; input.value = 200; }
+  saveTankSize(litri);
+
+  const minP = parseFloat(box.dataset.min);
+  const maxP = parseFloat(box.dataset.max);
+  const cost = (litri * minP).toFixed(2);
+  const saving = ((maxP - minP) * litri).toFixed(2);
+
+  document.getElementById("fill-calc-cost-val").textContent = cost.replace(".", ",");
+  const savEl = document.getElementById("fill-calc-saving");
+  if (parseFloat(saving) >= 0.01) {
+    savEl.classList.remove("zero");
+    savEl.innerHTML = `💸 Risparmi <b>${saving.replace(".", ",")} €</b> rispetto al più caro della lista`;
+  } else {
+    savEl.classList.add("zero");
+    savEl.textContent = "Prezzi uniformi: nessun risparmio significativo";
+  }
+
+  // Aggiorna stato visivo dei preset
+  document.querySelectorAll(".fill-calc-preset").forEach(b => {
+    b.classList.toggle("on", parseInt(b.dataset.v, 10) === Math.round(litri));
+  });
+}
+
+// Inizializza il calcolatore (chiamato dopo aver renderizzato il DOM)
+function initFillCalc(minPrice, maxPrice) {
+  // Doppio frame per garantire che il DOM sia pronto
+  requestAnimationFrame(() => {
+    if (!document.getElementById("fill-calc-box")) return;
+    onFillCalcInput();
+  });
 }
 
 // ── CARD HTML ─────────────────────────────────────────────────────────────────
@@ -860,6 +1072,10 @@ function decodeBuffer(buffer) {
 async function provaCaricamentoAutomatico() {
   const banner = document.getElementById("auto-loading");
   const sub = document.getElementById("auto-sub");
+  const fallbackNotice = document.getElementById("fallback-notice");
+  // Mostra il banner di caricamento (utile se l'utente clicca "Riprova")
+  banner.classList.remove("hidden");
+  if (fallbackNotice) fallbackNotice.classList.remove("show");
   try {
     sub.textContent = "Contatto il server...";
     const t = Date.now();
@@ -876,8 +1092,9 @@ async function provaCaricamentoAutomatico() {
     sub.textContent = "Elaboro...";
     setTimeout(() => { banner.classList.add("hidden"); elabora(); }, 300);
   } catch (e) {
-    // File non disponibili localmente → mostra schermata upload manuale
+    // File non disponibili o errore di rete → mostra schermata fallback con messaggio chiaro
     banner.classList.add("hidden");
+    if (fallbackNotice) fallbackNotice.classList.add("show");
   }
 }
 
@@ -999,9 +1216,12 @@ function onAcInput(val) {
   // Se geo è attivo, disattivalo silenziosamente appena l'utente inizia a digitare
   if (geoMode) {
     geoMode = false; userLat = null; userLon = null;
-    const btn = document.getElementById("btn-geo");
-    btn.textContent = "📍 Trovami i distributori più vicini";
-    btn.classList.remove("active"); btn.disabled = false;
+    const btn = document.getElementById("hero-geo");
+    if (btn) {
+      const content = btn.querySelector(".hero-geo-content");
+      if (content) content.innerHTML = '<span>TROVA I PIÙ VICINI A TE</span><span class="hero-geo-sub">Usa la tua posizione</span>';
+      btn.classList.remove("active", "busy"); btn.disabled = false;
+    }
     document.getElementById("geo-row").classList.remove("show");
   }
   const q = val.trim().toUpperCase();
@@ -1156,13 +1376,31 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 // ── SERVICE WORKER (PWA) ──────────────────────────────────────────────────────
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/prezzi-carburante/sw.js")
+    navigator.serviceWorker.register("./sw.js")
       .catch(() => {}); // silenzioso se fallisce
   });
 }
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
