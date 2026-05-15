@@ -4,20 +4,43 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<!-- Cloudflare Web Analytics (cookieless, GDPR-friendly) -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-  data-cf-beacon='{"token": "7e05ba2225064bcd86c5ad88ceaf8e5d"}'></script>
-<!-- End Cloudflare Web Analytics -->
-
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#f59e0b"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Carburante"/>
 <link rel="apple-touch-icon" href="og-image.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
+/* ── FONT LOCALI (privacy-friendly, no Google Fonts) ── */
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/bebas-neue.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/dm-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/dm-sans-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/dm-sans-600.woff2') format('woff2');
+}
 * { box-sizing:border-box; margin:0; padding:0; }
 body { background:#0a0c10; color:#e8e0d0; font-family:'DM Sans',sans-serif; min-height:100vh; }
 .header { padding:2rem; border-bottom:1px solid rgba(245,158,11,.2); display:flex; align-items:flex-end; gap:1.5rem; flex-wrap:wrap; }
@@ -1461,6 +1484,24 @@ function showUpdateBanner(newWorker) {
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
