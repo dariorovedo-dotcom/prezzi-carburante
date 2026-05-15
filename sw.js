@@ -11,7 +11,7 @@
 //      3. Mostrano un banner "Aggiorna" all'utente
 // ════════════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const CACHE_STATIC  = `carburante-static-${CACHE_VERSION}`;
 const CACHE_RUNTIME = `carburante-runtime-${CACHE_VERSION}`;
 
@@ -21,7 +21,10 @@ const STATIC_ASSETS = [
   "./og-image.png",
   "./icon-192.png",
   "./icon-512.png",
-  "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap",
+  "./fonts/bebas-neue.woff2",
+  "./fonts/dm-sans-400.woff2",
+  "./fonts/dm-sans-500.woff2",
+  "./fonts/dm-sans-600.woff2",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
 ];
@@ -113,9 +116,7 @@ self.addEventListener("fetch", event => {
         // Cacha solo risposte valide
         if (response && response.status === 200) {
           const isSameOrigin = url.origin === self.location.origin;
-          const isTrustedCdn = url.hostname === "cdnjs.cloudflare.com" ||
-                               url.hostname === "fonts.googleapis.com" ||
-                               url.hostname === "fonts.gstatic.com";
+          const isTrustedCdn = url.hostname === "cdnjs.cloudflare.com";
 
           if (isSameOrigin || isTrustedCdn) {
             const clone = response.clone();
@@ -142,3 +143,4 @@ self.addEventListener("message", event => {
     self.skipWaiting();
   }
 });
+
