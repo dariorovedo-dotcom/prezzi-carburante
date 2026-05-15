@@ -2,17 +2,28 @@
   "name": "Prezzi Carburante Italia",
   "short_name": "Carburante",
   "description": "Prezzi benzina, diesel, GPL e metano in Italia. Dati ufficiali MIMIT aggiornati ogni mattina.",
+  "lang": "it",
+  "dir": "ltr",
   "start_url": "/prezzi-carburante/",
   "scope": "/prezzi-carburante/",
+  "id": "/prezzi-carburante/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
   "background_color": "#0a0c10",
   "theme_color": "#f59e0b",
-  "orientation": "portrait-primary",
-  "lang": "it",
+  "categories": ["utilities", "navigation", "travel"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "og-image.png",
-      "sizes": "1200x630",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
@@ -20,22 +31,21 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "categories": ["utilities", "finance"],
   "shortcuts": [
     {
       "name": "Cerca comune",
       "short_name": "Cerca",
-      "url": "/prezzi-carburante/",
-      "description": "Cerca prezzi per comune"
+      "description": "Cerca prezzi per comune",
+      "url": "/prezzi-carburante/"
     }
   ]
 }
