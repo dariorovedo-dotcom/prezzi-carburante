@@ -152,6 +152,42 @@ select:disabled { opacity:.35; cursor:not-allowed; }
 .or-divider::before { left:2rem; }
 .or-divider::after { right:2rem; }
 @media(max-width:480px){ .or-divider::before { left:1rem; } .or-divider::after { right:1rem; } }
+
+/* ── BANNER AGGIORNAMENTO PWA ── */
+#update-banner {
+  position:fixed; bottom:1rem; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border:1px solid rgba(245,158,11,.4);
+  border-radius:8px;
+  padding:.7rem 1rem;
+  display:flex; align-items:center; gap:.7rem;
+  z-index:10000;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  font-family:'DM Sans',sans-serif;
+  font-size:.85rem;
+  color:#f3f4f6;
+  max-width:90vw;
+  animation:slide-up .3s ease-out;
+}
+@keyframes slide-up { from { opacity:0; transform:translate(-50%,20px); } to { opacity:1; transform:translate(-50%,0); } }
+#update-banner button {
+  background:#f59e0b; color:#0a0c10;
+  border:none; padding:.4rem .8rem;
+  font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700;
+  border-radius:4px; cursor:pointer;
+  letter-spacing:.05em;
+  transition:background .15s;
+}
+#update-banner button:hover { background:#fbbf24; }
+#update-banner #update-close {
+  background:transparent; color:#9ca3af;
+  padding:.2rem .5rem; font-size:1rem; font-weight:400;
+}
+#update-banner #update-close:hover { background:rgba(255,255,255,.1); color:#fff; }
+@media(max-width:480px){
+  #update-banner { left:1rem; right:1rem; transform:none; max-width:none; }
+  @keyframes slide-up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+}
 .geo-clear { background:none; border:none; color:#f87171; cursor:pointer; font-size:.75rem; padding:0; }
 .dist-tag { font-size:.62rem; color:#818cf8; margin-top:.1rem; }
 .avg-banner { background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15); border-radius:4px; padding:.45rem 1rem; margin-bottom:.8rem; font-size:.75rem; color:#818cf8; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
@@ -1377,12 +1413,72 @@ window.addEventListener("load", provaCaricamentoAutomatico);
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js")
+      .then(reg => {
+        // Controlla aggiornamenti ogni volta che l'app viene aperta
+        reg.update();
+
+        // Quando il SW trova un aggiornamento in attesa, mostra il banner
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              // C'è una nuova versione pronta + l'app è già controllata da un SW
+              showUpdateBanner(newWorker);
+            }
+          });
+        });
+      })
       .catch(() => {}); // silenzioso se fallisce
   });
+
+  // Quando il nuovo SW prende il controllo, ricarica la pagina
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+// Mostra il banner "Aggiorna disponibile"
+function showUpdateBanner(newWorker) {
+  // Non duplicare se già presente
+  if (document.getElementById("update-banner")) return;
+  const banner = document.createElement("div");
+  banner.id = "update-banner";
+  banner.innerHTML = `
+    <span>🔄 Nuova versione disponibile</span>
+    <button id="update-btn">AGGIORNA</button>
+    <button id="update-close" title="Chiudi">✕</button>
+  `;
+  document.body.appendChild(banner);
+  document.getElementById("update-btn").onclick = () => {
+    newWorker.postMessage({ type: "SKIP_WAITING" });
+  };
+  document.getElementById("update-close").onclick = () => banner.remove();
 }
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
