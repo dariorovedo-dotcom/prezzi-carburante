@@ -1,7 +1,7 @@
 // ════════════════════════════════════════════════════════════════════════════
 // SERVICE WORKER — Prezzi Carburante
 // Strategia: network-first per HTML, cache-first per asset statici
-// Versione: 2.0.0
+// Versione: 2.0.1
 // ════════════════════════════════════════════════════════════════════════════
 // 💡 COME FORZARE L'AGGIORNAMENTO PER TUTTI GLI UTENTI:
 //    Cambia il numero di CACHE_VERSION (es. da "v2" a "v3").
@@ -11,7 +11,7 @@
 //      3. Mostrano un banner "Aggiorna" all'utente
 // ════════════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const CACHE_STATIC  = `carburante-static-${CACHE_VERSION}`;
 const CACHE_RUNTIME = `carburante-runtime-${CACHE_VERSION}`;
 
@@ -82,7 +82,14 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE_RUNTIME).then(c => c.put(req, clone));
           return response;
         })
-        .catch(() => caches.match(req).then(r => r || caches.match("./index.html")))
+        .catch(() =>
+          caches.match(req)
+            .then(r => r || caches.match("./index.html"))
+            .then(r => r || new Response("Sei offline e la pagina non è in cache.", {
+              status: 503,
+              headers: { "Content-Type": "text/plain; charset=utf-8" }
+            }))
+        )
     );
     return;
   }
@@ -90,7 +97,9 @@ self.addEventListener("fetch", event => {
   // ─── 2. CSV (dati MIMIT) → NETWORK-FIRST ───────────────────────────────
   // I CSV vengono aggiornati ogni mattina, vogliamo sempre la versione più
   // fresca. Se la rete fallisce, fallback a cache.
-  if (url.pathname.endsWith(".csv")) {
+  // Solo i CSV del TUO sito: le richieste verso altri domini (es. mimit.gov.it)
+  // non vengono intercettate e restano gestite normalmente dal browser.
+  if (url.pathname.endsWith(".csv") && url.origin === self.location.origin) {
     event.respondWith(
       fetch(req)
         .then(response => {
@@ -100,7 +109,12 @@ self.addEventListener("fetch", event => {
           }
           return response;
         })
-        .catch(() => caches.match(req))
+        .catch(() =>
+          caches.match(req).then(cached => cached || new Response("", {
+            status: 503,
+            statusText: "CSV non disponibile offline"
+          }))
+        )
     );
     return;
   }
